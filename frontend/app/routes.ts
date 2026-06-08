@@ -11,6 +11,7 @@ export default [
   // Maps "/shop" to your shop.tsx file
   route("shop", "routes/shop.tsx"),
 
+
   // Maps "/about" to your about.tsx file
   route("about", "routes/about.tsx"),
   
