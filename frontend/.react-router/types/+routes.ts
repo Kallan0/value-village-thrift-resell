@@ -32,6 +32,9 @@ type Pages = {
   "/checkout": {
     params: {};
   };
+  "/wishlist": {
+    params: {};
+  };
   "/product/:id": {
     params: {
       "id": string;
@@ -42,7 +45,7 @@ type Pages = {
 type RouteFiles = {
   "root.tsx": {
     id: "root";
-    page: "/" | "/login" | "/register" | "/shop" | "/about" | "/cart" | "/checkout" | "/product/:id";
+    page: "/" | "/login" | "/register" | "/shop" | "/about" | "/cart" | "/checkout" | "/wishlist" | "/product/:id";
   };
   "routes/home.tsx": {
     id: "routes/home";
@@ -72,6 +75,10 @@ type RouteFiles = {
     id: "routes/checkout";
     page: "/checkout";
   };
+  "routes/wishlist.tsx": {
+    id: "routes/wishlist";
+    page: "/wishlist";
+  };
   "routes/product.$id.tsx": {
     id: "routes/product.$id";
     page: "/product/:id";
@@ -87,5 +94,6 @@ type RouteModules = {
   "routes/about": typeof import("./app/routes/about.tsx");
   "routes/cart": typeof import("./app/routes/cart.tsx");
   "routes/checkout": typeof import("./app/routes/checkout.tsx");
+  "routes/wishlist": typeof import("./app/routes/wishlist.tsx");
   "routes/product.$id": typeof import("./app/routes/product.$id.tsx");
 };

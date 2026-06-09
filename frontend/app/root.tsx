@@ -9,6 +9,7 @@ import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import { AuthProvider } from "./context/AuthContext"; 
 import "./app.css";
+import { WishlistProvider } from "./context/WishlistContext";
 
 export default function Root() {
   return (
@@ -23,12 +24,14 @@ export default function Root() {
         <Links />
       </head>
       <body>
-        <AuthProvider>
-          <Navbar />
-          <div style={{ paddingTop: '68px', minHeight: '100vh' }}>
-            <Outlet />
-          </div>
-          <Footer />
+       <AuthProvider>
+          <WishlistProvider> {/* <-- 2. Wrap the app */}
+            <Navbar />
+            <div style={{ paddingTop: '68px', minHeight: '100vh' }}>
+              <Outlet />
+            </div>
+            <Footer />
+          </WishlistProvider>
         </AuthProvider>
         
         <ScrollRestoration />

@@ -46,8 +46,7 @@ export default function Navbar() {
       
       <div className="nav-icons">
         <Link to="/shop" className="nav-icon" title="Search" onClick={closeMenu} style={{ textDecoration: 'none' }}>🔍</Link>
-        <div className="nav-icon" title="Wishlist">🤍</div>
-        <Link to="/cart" className="nav-icon" title="Cart" onClick={closeMenu} style={{ position: 'relative', textDecoration: 'none' }}>
+<Link to="/wishlist" className="nav-icon" title="Wishlist" onClick={closeMenu} style={{ textDecoration: 'none' }}>🤍</Link>        <Link to="/cart" className="nav-icon" title="Cart" onClick={closeMenu} style={{ position: 'relative', textDecoration: 'none' }}>
           🛍️<span className="cart-badge">2</span>
         </Link>
         <div className="nav-icon" title="Account" onClick={handleProfileClick} style={{ cursor: 'pointer' }}>
