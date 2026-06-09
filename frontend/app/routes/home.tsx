@@ -2,6 +2,10 @@ import { Link } from "react-router";
 import ProductCard from "../components/UI/ProductCard";
 
 export default function Home() {
+  const marqueeWords = [
+    "PRE-LOVED", "VINTAGE", "GREAT DEALS", "FREE RETURNS", "THRIFT", "RESALE"
+  ];
+  const scrollingText = [...marqueeWords, ...marqueeWords, ...marqueeWords, ...marqueeWords];
   const dummyProducts = [
     {
       _id: "1",
@@ -62,6 +66,61 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* 1. SCROLLING YELLOW BANNER */}
+      <div className="marquee-wrapper">
+        <div className="marquee-content">
+          {scrollingText.map((text, index) => (
+            <div key={index} className="marquee-item">
+              {text} <span className="marquee-diamond">♦</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* 2. BROWSE BY CATEGORY SECTION */}
+      <section className="category-section">
+        <div className="cat-header-row">
+          <div>
+            <div className="cat-eyebrow">BROWSE BY CATEGORY</div>
+            <h2 className="cat-h2">SHOP THE<br />VILLAGE</h2>
+          </div>
+          <Link to="/shop" className="cat-link-all">ALL CATEGORIES →</Link>
+        </div>
+
+        <div className="cat-grid">
+          <Link to="/shop?category=womens" className="cat-card bg-brown">
+            <div className="cat-card-icon">👗</div>
+            <div className="cat-card-title">WOMEN'S</div>
+            <div className="cat-card-count">18,200 items</div>
+          </Link>
+          
+          <Link to="/shop?category=mens" className="cat-card bg-green">
+            <div className="cat-card-icon">👔</div>
+            <div className="cat-card-title">MEN'S</div>
+            <div className="cat-card-count">12,400 items</div>
+          </Link>
+          
+          <Link to="/shop?category=shoes" className="cat-card bg-purple">
+            <div className="cat-card-icon">👟</div>
+            <div className="cat-card-title">SHOES</div>
+            <div className="cat-card-count">7,600 items</div>
+          </Link>
+          
+          <Link to="/shop?category=accessories" className="cat-card bg-tan">
+            <div className="cat-card-icon">👜</div>
+            <div className="cat-card-title">ACCESSORIES</div>
+            <div className="cat-card-count">5,800 items</div>
+          </Link>
+          
+          <Link to="/shop?category=vintage" className="cat-card bg-red">
+            <div className="cat-card-icon">✨</div>
+            <div className="cat-card-title">VINTAGE</div>
+            <div className="cat-card-count">3,200 items</div>
+          </Link>
+        </div>
+      </section>
+
 
       <div className="products-section" style={{ paddingTop: "60px" }}>
         <div className="section-header">
