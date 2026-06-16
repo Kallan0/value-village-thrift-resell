@@ -3,6 +3,8 @@ import { useNavigate, useLocation, Link } from "react-router";
 import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [keepSignedIn, setKeepSignedIn] = useState(true);
   
@@ -11,11 +13,14 @@ export default function Login() {
   const { login } = useAuth();
   const from = location.state?.from || "/";
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    login();
-    navigate(from, { replace: true });
+    const success = await login(email, password);
+    if (success) {
+      navigate(from, { replace: true });
+    }
   };
+
 
   return (
     <div className="page-content auth-wrap">

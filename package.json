@@ -1,0 +1,26 @@
+{
+  "name": "value-village",
+  "version": "1.0.0",
+  "description": "A modern, production-ready template for building full-stack React applications using React Router.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && node server.js",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kallan0/value-village-thrift-resell.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Kallan0/value-village-thrift-resell/issues"
+  },
+  "homepage": "https://github.com/Kallan0/value-village-thrift-resell#readme",
+  "devDependencies": {
+    "concurrently": "^10.0.3"
+  }
+}

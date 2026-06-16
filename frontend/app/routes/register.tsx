@@ -3,25 +3,33 @@ import { useNavigate, useLocation, Link } from "react-router";
 import { useAuth } from "../context/AuthContext";
 
 export default function Register() {
+  // 1. Added state variables to track what the user types
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [agreed, setAgreed] = useState(false);
   
   const navigate = useNavigate();
   const location = useLocation();
-  const { login } = useAuth();
+  const {register} = useAuth();
   const from = location.state?.from || "/";
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!agreed) return alert("Please agree to the Terms of Service.");
     
-    login(); // Log them in immediately after creating the account
-    navigate(from, { replace: true });
+    // Call the new register function with all 4 fields!
+    const success = await register(firstName, lastName, email, password); 
+    
+    if (success) {
+      navigate(from, { replace: true });
+    }
   };
 
   return (
     <div className="page-content auth-wrap">
-      {/* Top Toggle */}
       <div className="auth-toggle">
         <Link to="/login" className="auth-toggle-btn inactive">Sign In</Link>
         <div className="auth-toggle-btn active">Create Account</div>
@@ -30,11 +38,10 @@ export default function Register() {
       <h1 className="auth-h1">JOIN THE VILLAGE</h1>
       <div className="auth-sub">Create your free account in 30 seconds</div>
 
-      {/* Social Logins */}
       <div className="social-row">
-        <button className="btn-social">🍎 Apple</button>
-        <button className="btn-social">🔵 Google</button>
-        <button className="btn-social">📘 Facebook</button>
+        <button type="button" className="btn-social">🍎 Apple</button>
+        <button type="button" className="btn-social">🔵 Google</button>
+        <button type="button" className="btn-social">📘 Facebook</button>
       </div>
 
       <div className="auth-divider"><span>Or sign up with email</span></div>
@@ -44,18 +51,40 @@ export default function Register() {
           <div className="form-row">
             <div className="form-field">
               <label className="form-label">First Name</label>
-              <input type="text" className="form-input" required placeholder="Jane" />
+              {/* 3. Wired up the inputs to update state */}
+              <input 
+                type="text" 
+                className="form-input" 
+                required 
+                placeholder="Jane" 
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+              />
             </div>
             <div className="form-field">
               <label className="form-label">Last Name</label>
-              <input type="text" className="form-input" required placeholder="Doe" />
+              <input 
+                type="text" 
+                className="form-input" 
+                required 
+                placeholder="Doe" 
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+              />
             </div>
           </div>
           
           <div className="form-row full" style={{ marginTop: '20px' }}>
             <div className="form-field">
               <label className="form-label">Email Address</label>
-              <input type="email" className="form-input" required placeholder="you@example.com" />
+              <input 
+                type="email" 
+                className="form-input" 
+                required 
+                placeholder="you@example.com" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
             </div>
           </div>
 
@@ -68,6 +97,8 @@ export default function Register() {
                   className="form-input" 
                   required 
                   placeholder="Min. 8 characters" 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
                 <span className="eye-icon" onClick={() => setShowPassword(!showPassword)}>
                   {showPassword ? '👁️‍🗨️' : '👁️'}
@@ -77,9 +108,8 @@ export default function Register() {
           </div>
         </div>
 
-        {/* Password Strength Indicator */}
-        <div className="pw-strength-bar"><div className="pw-fill"></div></div>
-        <div className="pw-text">Strength: Good</div>
+        <div className="pw-strength-bar"><div className="pw-fill" style={{ width: password.length >= 8 ? '100%' : '30%' }}></div></div>
+        <div className="pw-text">Strength: {password.length >= 8 ? 'Good' : 'Weak'}</div>
 
         <div className="auth-check-row" onClick={() => setAgreed(!agreed)}>
           <div className={`auth-check-box ${agreed ? 'checked' : ''}`}>
