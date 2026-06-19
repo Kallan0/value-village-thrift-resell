@@ -23,6 +23,9 @@ type Pages = {
   "/shop": {
     params: {};
   };
+  "/sell": {
+    params: {};
+  };
   "/about": {
     params: {};
   };
@@ -45,7 +48,7 @@ type Pages = {
 type RouteFiles = {
   "root.tsx": {
     id: "root";
-    page: "/" | "/login" | "/register" | "/shop" | "/about" | "/cart" | "/checkout" | "/wishlist" | "/product/:id";
+    page: "/" | "/login" | "/register" | "/shop" | "/sell" | "/about" | "/cart" | "/checkout" | "/wishlist" | "/product/:id";
   };
   "routes/home.tsx": {
     id: "routes/home";
@@ -62,6 +65,10 @@ type RouteFiles = {
   "routes/shop.tsx": {
     id: "routes/shop";
     page: "/shop";
+  };
+  "routes/sell.tsx": {
+    id: "routes/sell";
+    page: "/sell";
   };
   "routes/about.tsx": {
     id: "routes/about";
@@ -91,6 +98,7 @@ type RouteModules = {
   "routes/login": typeof import("./app/routes/login.tsx");
   "routes/register": typeof import("./app/routes/register.tsx");
   "routes/shop": typeof import("./app/routes/shop.tsx");
+  "routes/sell": typeof import("./app/routes/sell.tsx");
   "routes/about": typeof import("./app/routes/about.tsx");
   "routes/cart": typeof import("./app/routes/cart.tsx");
   "routes/checkout": typeof import("./app/routes/checkout.tsx");

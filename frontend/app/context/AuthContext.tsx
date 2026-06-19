@@ -3,15 +3,18 @@ import { createContext, useContext, useState, type ReactNode } from 'react';
 // 1. Add register to the interface
 interface AuthContextType {
   isAuthenticated: boolean;
+  user : any;
   login: (email: string, password: string) => Promise<boolean>;
   register: (firstName: string, lastName: string, email: string, password: string) => Promise<boolean>;
   logout: () => void;
 }
 
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState<any>(null);
 
   const login = async (email: string, password: string) => {
     try {
@@ -23,6 +26,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const data = await response.json();
       if (response.ok) {
         setIsAuthenticated(true);
+        setUser(data.user);
         return true; 
       } else {
         alert(data.message);
@@ -60,7 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     // 3. Expose register to the rest of the app
-    <AuthContext.Provider value={{ isAuthenticated, login, register, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated,user, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

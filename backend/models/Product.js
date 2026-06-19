@@ -2,17 +2,17 @@ const mongoose = require('mongoose');
 
 const productSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  emoji: { type: String, default: '👗' },
-  meta: { type: String, required: true }, // e.g., "Size M · Like new"
-  priceNow: { type: Number, required: true },
-  priceWas: { type: Number, required: true },
-  savePercentage: { type: Number },
-  category: { type: String, required: true },
-  badge: {
-    type: { type: String, enum: ['hot', 'thrift', 'new', 'none'], default: 'none' },
-    text: { type: String }
-  },
-  inStock: { type: Boolean, default: true }
+  description: { type: String, required: true },
+  price: { type: Number, required: true },
+  originalPrice: { type: Number }, // Optional: so we can calculate "Save % vs retail"
+  category: { type: String, required: true }, // e.g., "Women's", "Vintage", "Shoes"
+  condition: { type: String, required: true }, // e.g., "Like New", "Good", "Fair"
+  imageUrl: { type: String, required: true }, // We will store the Cloudinary URL here
+  seller: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User', // This creates a hard link to the User model!
+    required: true 
+  }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Product', productSchema);
