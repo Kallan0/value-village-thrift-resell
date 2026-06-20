@@ -7,7 +7,7 @@ const productSchema = new mongoose.Schema({
   originalPrice: { type: Number }, // Optional: so we can calculate "Save % vs retail"
   category: { type: String, required: true }, // e.g., "Women's", "Vintage", "Shoes"
   condition: { type: String, required: true }, // e.g., "Like New", "Good", "Fair"
-  imageUrl: { type: String, required: true }, // We will store the Cloudinary URL here
+  imageUrl: { type: [String], required: true, validate: [arrayLimit, '{path} exceeds the limit of 5'] }, // We will store the Cloudinary URL here
   seller: { 
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'User', // This creates a hard link to the User model!
@@ -16,3 +16,7 @@ const productSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 module.exports = mongoose.model('Product', productSchema);
+function arrayLimit(val) {
+  return val.length <= 5; // Limit to 5 images per product
+}
+

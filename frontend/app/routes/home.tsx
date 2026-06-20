@@ -51,7 +51,9 @@ export default function Home() {
             <Link to="/shop">
               <button className="btn-primary">Shop Now</button>
             </Link>
-            <button className="btn-yellow">Sell With Us</button>
+            <Link to="/sell">
+              <button className="btn-yellow">Sell With Us</button>
+            </Link>
           </div>
         </div>
         <div className="hero-right">

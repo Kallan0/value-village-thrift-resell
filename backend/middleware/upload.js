@@ -16,7 +16,7 @@ const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: 'value-village-products', // This will create a neat folder in your Cloudinary dashboard!
-    allowedFormats: ['jpg', 'jpeg', 'png', 'webp']
+    allowedFormats: ['jpg', 'jpeg', 'png', 'webp', 'heic']
   }
 });
 
