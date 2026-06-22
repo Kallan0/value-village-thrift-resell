@@ -4,13 +4,11 @@ import { createContext, useContext, useState, type ReactNode } from 'react';
 export interface Product {
   _id: string;
   name: string;
-  emoji: string;
-  meta: string;
-  priceNow: number;
-  priceWas: number;
-  savePercentage: number;
-  badge?: { type: 'hot' | 'thrift' | 'new' | 'drop' | 'low'; text: string };
-  seller?: string;
+  price: number;
+  category: string;
+  condition: string;
+  imageUrl: string[]; 
+  badge?: { type: "hot" | "thrift" | "new"; text: string };
 }
 
 interface WishlistContextType {

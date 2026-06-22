@@ -1,3 +1,4 @@
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 require('dotenv').config();
 
 const express = require('express');
@@ -121,7 +122,7 @@ app.post('/api/products', upload.array('images', 5), async (req, res) => {
     // 2. Grab the rest of the text data from the frontend form
     const { name, description, price, category, condition, sellerId } = req.body;
 
-    // 3. Create the new Product blueprint
+      //  product blueprint 
     const newProduct = new Product({
       name,
       description,
@@ -144,5 +145,18 @@ app.post('/api/products', upload.array('images', 5), async (req, res) => {
   } catch (error) {
     console.error("Backend crash", error);
     res.status(500).json({ message: "Failed to upload product." });
+  }
+});
+
+// --- GET ALL PRODUCTS ROUTE ---
+app.get('/api/products', async (req, res) => {
+  try {
+    // .find() grabs everything. .sort({ createdAt: -1 }) puts the newest items first!
+    const products = await Product.find({status: 'approved'}).sort({ createdAt: -1 });
+    
+    res.status(200).json(products);
+  } catch (error) {
+    console.error("Fetch Products Error:", error);
+    res.status(500).json({ message: "Failed to fetch products." });
   }
 });
