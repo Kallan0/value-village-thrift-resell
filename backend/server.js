@@ -160,3 +160,19 @@ app.get('/api/products', async (req, res) => {
     res.status(500).json({ message: "Failed to fetch products." });
   }
 });
+
+// --- ADMIN: GET ALL PRODUCTS (FOR DASHBOARD) ---
+app.get('/api/admin/products', async (req, res) => {
+  console.log("🚀 ADMIN DASHBOARD FETCH TRIGGERED!");
+  try {
+    const allProducts = await Product.find()
+      .populate('seller', 'firstName email')
+      .sort({ createdAt: -1 });
+      
+    console.log(`📦 Success! Found ${allProducts.length} items in the database.`);
+    res.status(200).json(allProducts);
+  } catch (error) {
+    console.error("❌ Fetch Admin Dashboard Error:", error);
+    res.status(500).json({ message: "Failed to fetch admin dashboard data." });
+  }
+});

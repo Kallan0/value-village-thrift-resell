@@ -4,6 +4,9 @@ export default [
   // Maps the root URL ("/") to your home.tsx file
   index("routes/home.tsx"),
 
+  // Maps "/admin" to your admin.tsx file
+  route("admin", "routes/admin.tsx"),
+
   // Maps login page & register page to their respective files
   route("login", "routes/login.tsx"),
   route("register", "routes/register.tsx"),

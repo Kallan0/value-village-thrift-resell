@@ -1,6 +1,14 @@
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router"; // 1. Added useLocation
 
 export default function Footer() {
+  const location = useLocation(); // 2. Grab the current URL
+
+  // 3. The Magic Trick: If the URL starts with /admin, render absolutely nothing!
+  if (location.pathname.startsWith("/admin")) {
+    return null;
+  }
+
+  // Otherwise, render the footer normally
   return (
     <footer>
       <div className="footer-top">

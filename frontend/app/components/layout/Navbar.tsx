@@ -6,6 +6,10 @@ export default function Navbar() {
   const { isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+
+  if (location.pathname.startsWith("/admin")) {
+    return null; // Don't render the navbar on admin pages
+  }
   
   // State to control the mobile menu
   const [isMenuOpen, setIsMenuOpen] = useState(false);
