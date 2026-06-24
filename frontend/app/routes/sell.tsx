@@ -14,7 +14,7 @@ export default function Sell() {
   const [condition, setCondition] = useState("Good");
   
   // UPGRADED STATE: Now handling arrays!
-  const [images, setImages] = useState<File[]>([]);
+  const [imageUrl, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -23,11 +23,11 @@ export default function Sell() {
     if (e.target.files) {
       const selectedFiles = Array.from(e.target.files);
       
-      if (images.length + selectedFiles.length > 5) {
+      if (imageUrl.length + selectedFiles.length > 5) {
         return alert("You can only upload a maximum of 5 images.");
       }
 
-      const newFiles = [...images, ...selectedFiles];
+      const newFiles = [...imageUrl, ...selectedFiles];
       setImages(newFiles);
 
       // Create preview URLs for the newly added files
@@ -37,13 +37,13 @@ export default function Sell() {
   };
 
   const removeImage = (indexToRemove: number) => {
-    setImages(images.filter((_, index) => index !== indexToRemove));
+    setImages(imageUrl.filter((_, index) => index !== indexToRemove));
     setPreviews(previews.filter((_, index) => index !== indexToRemove));
   };
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (images.length === 0) return alert("Please upload at least one image!");
+    if (imageUrl.length === 0) return alert("Please upload at least one image!");
     if (!user) return alert("You must be logged in to sell items.");
 
     setIsUploading(true);
@@ -57,7 +57,7 @@ export default function Sell() {
     formData.append("sellerId", user.id); 
     
     // UPGRADE: Loop through all files and append them to the 'images' key
-    images.forEach(image => {
+    imageUrl.forEach(image => {
       formData.append("images", image); 
     });
 
@@ -95,7 +95,7 @@ export default function Sell() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           
           {/* Main Upload Box */}
-          {images.length < 5 && (
+          {imageUrl.length < 5 && (
             <div 
               style={{ 
                 aspectRatio: '4/5', border: '2px dashed var(--border)', borderRadius: '8px', 
