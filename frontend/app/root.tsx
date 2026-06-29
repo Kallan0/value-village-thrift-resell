@@ -11,6 +11,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { WishlistProvider } from "./context/WishlistContext";
 import { useEffect, useState } from "react";
 import "./app.css";
+import Chatbot from "./components/UI/ChatBot";
 
 
 export default function Root() {
@@ -40,6 +41,7 @@ export default function Root() {
             <Navbar />
             <div style={{ paddingTop: '68px', minHeight: '100vh' }}>
               <Outlet />
+              <Chatbot/>
             </div>
             <Footer />
           </WishlistProvider>

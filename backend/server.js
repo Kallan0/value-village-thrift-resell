@@ -12,6 +12,7 @@ const User = require('./models/User'); // Import the blueprint you just made
 
 const Product = require('./models/Product');
 const upload = require('./middleware/upload');
+const Chatlog = require('./models/Chatlog');
 
 // Middleware
 app.use(cors());
@@ -201,5 +202,50 @@ app.get('/api/admin/products', async (req, res) => {
   } catch (error) {
     console.error("❌ Fetch Admin Dashboard Error:", error);
     res.status(500).json({ message: "Failed to fetch admin dashboard data." });
+  }
+});
+// -- Chatbot LOGS --
+app.post('/api/chatbot', async (req, res) => {
+  try{
+      const {userId, question, answer} = req.body;
+
+      const newLog =new ChatLog({
+        user: userId || null,
+        question,
+        answer
+  });
+  const savedLog = await newLog.save();
+
+  res.status(200).json({ logId: savedLog._id });
+  } catch (error) {
+    console.error("❌ Chatbot Log Error:", error);
+    res.status(500).json({ message: "Failed to save chatbot log." });
+  }
+});
+
+app.patch('/api/chatbot/:id/feedback', async (req, res) => {
+  try{
+    const {feedback} = req.body;
+
+    await Chatlog.findByIdAndUpdate(req.params.id, {feedback});
+
+    res.status(500).json({message: "Feedback updated successfully."});
+  } catch(error) {
+    console.error("Feedback error", error);
+    res.status(500).json({message: "Failed to update feedback."});
+  }
+});
+
+const Faq = require('./models/Faq');
+
+// --- GET ALL ACTIVE FAQS ---
+app.get('/api/chat/faqs', async (req, res) => {
+  try {
+    // Only grab questions marked 'isActive: true' and sort them by the 'order' number
+    const faqs = await Faq.find({ isActive: true }).sort({ order: 1 });
+    res.status(200).json(faqs);
+  } catch (error) {
+    console.error("Failed to fetch FAQs:", error);
+    res.status(500).json({ message: "Failed to load knowledge base" });
   }
 });
