@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, useOutletContext } from "react-router";
+import FaqManager from "~/components/admin/FaqManager";
 
 
 export default function AdminDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const {theme, setTheme} = useOutletContext<any>()  
+  const {theme, setTheme} = useOutletContext<any>();  
 
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
@@ -17,7 +18,8 @@ export default function AdminDashboard() {
 
   const [allProducts, setAllProducts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("pending"); 
+  const [activeTab, setActiveTab] = useState("pending");
+  const [productTab, setProductTab] = useState("products"); // Default to 'products' tab
 
   useEffect(() => {
     // if (!user) {
@@ -109,6 +111,7 @@ export default function AdminDashboard() {
           <SidebarButton label="Sold Items" count={soldItems.length} active={activeTab === 'sold'} onClick={() => setActiveTab('sold')} />
           <hr style={{ margin: '16px 0', border: 'none', borderTop: '1px solid var(--border)' }} />
           <SidebarButton label="Analytics & Stats" count={null} active={activeTab === 'analytics'} onClick={() => setActiveTab('analytics')} />
+          <button onClick={() => setProductTab('faqs')}>🤖 Chatbot FAQs</button>
           <div style={{ marginTop: 'auto', paddingTop: '24px', borderTop: '1px solid var(--border-color)' }}>
           <button 
             onClick={toggleTheme}
@@ -135,7 +138,7 @@ export default function AdminDashboard() {
           </h1>
           <p style={{ color: 'var(--brown-muted)' }}>Manage and review platform activity.</p>
         </div>
-
+              {productTab === 'faqs' && <FaqManager />}
         {activeTab === 'analytics' ? (
           <div style={{ padding: '48px', backgroundColor: '#fff', border: '1px solid var(--border)', borderRadius: '8px', textAlign: 'center' }}>
             <h2>📊 Analytics Engine</h2>
@@ -169,7 +172,7 @@ export default function AdminDashboard() {
                     <div style={{ flexGrow: 1 }}>
                       <div style={{ fontSize: '18px', fontWeight: 600 }}>{item.name}</div>
                       <div style={{ fontSize: '14px', color: 'var(--brown-muted)' }}>
-                        Seller: {item.seller?.email || 'Unknown'} | Price: ${item.price}
+                        Seller: {item.seller?.email || 'Unknown'} | Price: ₹{item.price}
                       </div>
                       {displayStatus === 'rejected' && item.rejectionReason && (
                         <div style={{ fontSize: '13px', color: 'var(--red)', marginTop: '4px', backgroundColor: '#FDF2F2', padding: '4px 8px', borderRadius: '4px', display: 'inline-block' }}>

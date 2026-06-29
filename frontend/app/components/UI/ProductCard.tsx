@@ -78,7 +78,7 @@ export default function ProductCard({ product }: ProductProps) {
           
           <div className="product-price-row" style={{ marginTop: '8px' }}>
             <span className="price-now" style={{ fontSize: '16px', fontWeight: 700 }}>
-              ${product.price}
+            ₹{product.price}
             </span>
           </div>
         </div>

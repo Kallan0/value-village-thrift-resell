@@ -40,7 +40,7 @@ export default function Root() {
           <WishlistProvider> {/* <-- 2. Wrap the app */}
             <Navbar />
             <div style={{ paddingTop: '68px', minHeight: '100vh' }}>
-              <Outlet />
+              <Outlet context={{theme, setTheme}} />
               <Chatbot/>
             </div>
             <Footer />

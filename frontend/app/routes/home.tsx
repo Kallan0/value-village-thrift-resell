@@ -62,7 +62,7 @@ export default function Home() {
           <div className="hero-right-content">
             <div className="price-tag">
               <div className="price-tag-label">Starting from</div>
-              <div className="price-tag-val">$5</div>
+              <div className="price-tag-val">₹199</div>
               <div className="price-tag-sub">Verified pre-loved items</div>
             </div>
           </div>

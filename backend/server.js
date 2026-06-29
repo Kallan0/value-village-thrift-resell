@@ -249,3 +249,38 @@ app.get('/api/chat/faqs', async (req, res) => {
     res.status(500).json({ message: "Failed to load knowledge base" });
   }
 });
+// --- CREATE NEW FAQ ---
+app.post('/api/chat/faqs', async (req, res) => {
+  try {
+    const { question, answer, order, isActive } = req.body;
+    const newFaq = new Faq({ question, answer, order, isActive });
+    await newFaq.save();
+    res.status(201).json(newFaq);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to create FAQ" });
+  }
+});
+
+// --- UPDATE FAQ ---
+app.put('/api/chat/faqs/:id', async (req, res) => {
+  try {
+    const updatedFaq = await Faq.findByIdAndUpdate(
+      req.params.id, 
+      req.body, 
+      { new: true } // Returns the updated document
+    );
+    res.status(200).json(updatedFaq);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to update FAQ" });
+  }
+});
+
+// --- DELETE FAQ ---
+app.delete('/api/chat/faqs/:id', async (req, res) => {
+  try {
+    await Faq.findByIdAndDelete(req.params.id);
+    res.status(200).json({ message: "FAQ deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to delete FAQ" });
+  }
+});
