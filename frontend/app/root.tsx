@@ -8,10 +8,21 @@ import {
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import { AuthProvider } from "./context/AuthContext"; 
-import "./app.css";
 import { WishlistProvider } from "./context/WishlistContext";
+import { useEffect, useState } from "react";
+import "./app.css";
+
 
 export default function Root() {
+
+  const [theme, setTheme] = useState('dark');
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('app-theme') || 'light';
+    setTheme(savedTheme);
+  }, []);
+
+  
   return (
     <html lang="en">
       <head>

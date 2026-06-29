@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router";
 import { useAuth } from "../../context/AuthContext";
+import SearchBar from "../UI/SearchBar";
 
 export default function Navbar() {
   const { isAuthenticated, logout } = useAuth();
@@ -48,9 +49,10 @@ export default function Navbar() {
         <Link to="/about" className="nav-link" onClick={closeMenu}>About</Link>
       </div>
       
-      <div className="nav-icons">
-        <Link to="/shop" className="nav-icon" title="Search" onClick={closeMenu} style={{ textDecoration: 'none' }}>🔍</Link>
-<Link to="/wishlist" className="nav-icon" title="Wishlist" onClick={closeMenu} style={{ textDecoration: 'none' }}>🤍</Link>        <Link to="/cart" className="nav-icon" title="Cart" onClick={closeMenu} style={{ position: 'relative', textDecoration: 'none' }}>
+      <div className="nav-icons" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <SearchBar/>
+        <Link to="/wishlist" className="nav-icon" title="Wishlist" onClick={closeMenu} style={{ textDecoration: 'none' }}>🤍</Link>        
+        <Link to="/cart" className="nav-icon" title="Cart" onClick={closeMenu} style={{ position: 'relative', textDecoration: 'none' }}>
           🛍️<span className="cart-badge">2</span>
         </Link>
         <div className="nav-icon" title="Account" onClick={handleProfileClick} style={{ cursor: 'pointer' }}>

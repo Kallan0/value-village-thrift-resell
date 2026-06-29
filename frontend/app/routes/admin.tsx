@@ -1,11 +1,20 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router";
+import { useNavigate, useOutletContext } from "react-router";
+
 
 export default function AdminDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  
+
+  const {theme, setTheme} = useOutletContext<any>()  
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+    localStorage.setItem('app-theme', newTheme);
+  };
+
   const [allProducts, setAllProducts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("pending"); 
@@ -100,6 +109,20 @@ export default function AdminDashboard() {
           <SidebarButton label="Sold Items" count={soldItems.length} active={activeTab === 'sold'} onClick={() => setActiveTab('sold')} />
           <hr style={{ margin: '16px 0', border: 'none', borderTop: '1px solid var(--border)' }} />
           <SidebarButton label="Analytics & Stats" count={null} active={activeTab === 'analytics'} onClick={() => setActiveTab('analytics')} />
+          <div style={{ marginTop: 'auto', paddingTop: '24px', borderTop: '1px solid var(--border-color)' }}>
+          <button 
+            onClick={toggleTheme}
+            style={{ 
+              display: 'flex', alignItems: 'center', gap: '12px', width: '100%', 
+              padding: '12px 16px', borderRadius: '8px', border: '1px solid var(--border-color)', 
+              backgroundColor: 'transparent', color: 'var(--text-main)', 
+              cursor: 'pointer', fontWeight: 600, transition: 'all 0.2s ease'
+            }}
+          >
+            {/* Show a Moon if Light Mode, show a Sun if Dark Mode */}
+            {theme === "light" ? "🌙 Dark Mode" : "☀️ Light Mode"}
+          </button>
+        </div>
         </div>
       </div>
 
@@ -137,7 +160,7 @@ export default function AdminDashboard() {
                 const displayStatus = item.status || 'pending';
 
                 return (
-                  <div key={item._id} style={{ display: 'flex', gap: '24px', padding: '16px', border: '1px solid var(--border)', borderRadius: '8px', backgroundColor: '#fff', alignItems: 'center' }}>
+                  <div key={item._id} style={{ display: 'flex', gap: '24px', padding: '16px', border: '1px solid var(--border)', borderRadius: '8px', backgroundColor: 'var(--bg-surface)', alignItems: 'center' }}>
                     
                     {/* Thumbnail safely rendered */}
                     <img src={displayImage} alt="thumb" style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '4px', backgroundColor: 'var(--cream)' }} />

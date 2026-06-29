@@ -3024,3 +3024,37 @@ footer {
   .category-section { padding: 48px 24px; }
   .cat-header-row { flex-direction: column; align-items: flex-start; gap: 24px; }
 }
+/* --- BASE THEME (LIGHT MODE) --- */
+:root {
+  --bg-base: #f9f9f9;       /* Main background */
+  --bg-surface: #ffffff;    /* Card and sidebar background */
+  --text-main: #1A1612;     /* Primary text */
+  --text-muted: #888888;    /* Muted text */
+  --border-color: #e0e0e0;  /* Borders */
+  
+  /* Brand Colors */
+  --brown: #4A3B32;         
+  --red: #C8342A;           
+  --cream: #F5F2EB;         
+}
+
+/* --- DARK THEME OVERRIDES --- */
+/* When this class is added to the <body>, these colors take over! */
+body.dark-theme {
+  --bg-base: #121212;
+  --bg-surface: #1E1E1E;
+  --text-main: #F5F5F5;
+  --text-muted: #A0A0A0;
+  --border-color: #333333;
+  
+  /* Adjusting brand colors slightly so they pop on dark backgrounds */
+  --brown: #D4A373;         
+  --cream: #2A2A2A;         
+}
+
+/* Make sure the body actually uses these global colors */
+body {
+  background-color: var(--bg-base);
+  color: var(--text-main);
+  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth fade effect */
+}

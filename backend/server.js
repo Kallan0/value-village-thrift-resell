@@ -36,7 +36,7 @@ app.post('/api/auth/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // 1. THE TRUTH SERUM: What did React actually send?
+    // 1. THE TRUTH SERUM
     console.log("👉 FRONTEND SENT - Email:", `"${email}"`, "Password:", `"${password}"`);
 
     // Prevent crashes if email/password are somehow undefined
