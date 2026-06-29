@@ -22,7 +22,7 @@ export default function Chatbot() {
 useEffect(() => {
     const fetchFAQ = async () => {
         try {
-            const response = await fetch("http://localhost:5000/api/chat/faq");
+            const response = await fetch("http://localhost:5000/api/chat/faqs");
             if (response.ok) {
                 const data = await response.json();
                 setDynamicFAQ(data);
@@ -63,6 +63,8 @@ useEffect(() => {
             ? { ...msg, text: qaPair.answer, dbLogId: data.logId } 
             : msg
         ));
+      } else {
+        throw new Error("Failed to log chat");
       }
     } catch (error) {
       console.error("Failed to log chat");

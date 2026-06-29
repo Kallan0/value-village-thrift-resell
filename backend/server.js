@@ -205,7 +205,7 @@ app.get('/api/admin/products', async (req, res) => {
   }
 });
 // -- Chatbot LOGS --
-app.post('/api/chatbot', async (req, res) => {
+app.post('/api/chat/log', async (req, res) => {
   try{
       const {userId, question, answer} = req.body;
 
@@ -213,7 +213,7 @@ app.post('/api/chatbot', async (req, res) => {
         user: userId || null,
         question,
         answer
-  });
+      });
   const savedLog = await newLog.save();
 
   res.status(200).json({ logId: savedLog._id });

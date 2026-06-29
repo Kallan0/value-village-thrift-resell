@@ -8,4 +8,4 @@ const chatLogSchema = new mongoose.Schema({
     feedback: {
         type: String, enum: ['good', 'bad', 'none'], default: 'none'}
     },{timestamps: true});
-module.exports = mongoose.model("ChatLog", chatLogSchema);
+module.exports = mongoose.model("chat", chatLogSchema);
