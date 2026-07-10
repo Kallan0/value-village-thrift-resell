@@ -1,14 +1,13 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
 
-// 1. Add register to the interface
 interface AuthContextType {
   isAuthenticated: boolean;
-  user : any;
+  user: any;
   login: (email: string, password: string) => Promise<boolean>;
-  register: (firstName: string, lastName: string, email: string, password: string) => Promise<boolean>;
+  requestOtp: (firstName: string, lastName: string, email: string, password: string) => Promise<{ success: boolean; message: string }>;
+  verifyOtp: (email: string, otp: string) => Promise<{ success: boolean; message: string }>;
   logout: () => void;
 }
-
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -27,44 +26,63 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (response.ok) {
         setIsAuthenticated(true);
         setUser(data.user);
-        return true; 
-      } else {
-        alert(data.message);
-        return false;
+        return true;
       }
+
+      alert(data.message);
+      return false;
     } catch (error) {
+      console.error('Failed to connect to backend:', error);
       return false;
     }
   };
 
-  // 2. Add the new register function
-  const register = async (firstName: string, lastName: string, email: string, password: string) => {
+  const requestOtp = async (firstName: string, lastName: string, email: string, password: string) => {
     try {
-      const response = await fetch('http://localhost:5000/api/auth/register', {
+      const response = await fetch('http://localhost:5000/api/auth/request-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ firstName, lastName, email, password })
       });
       const data = await response.json();
+
       if (response.ok) {
-        // Automatically log them in after a successful registration
-        setIsAuthenticated(true);
-        return true; 
-      } else {
-        alert(data.message);
-        return false;
+        return { success: true, message: data.message };
       }
+
+      return { success: false, message: data.message || 'Unable to send OTP.' };
     } catch (error) {
-      console.error("Failed to connect to backend:", error);
-      return false;
+      console.error('Failed to connect to backend:', error);
+      return { success: false, message: 'Unable to connect to the server.' };
+    }
+  };
+
+  const verifyOtp = async (email: string, otp: string) => {
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, otp })
+      });
+      const data = await response.json();
+
+      if (response.ok) {
+        setIsAuthenticated(true);
+        setUser(data.user);
+        return { success: true, message: data.message };
+      }
+
+      return { success: false, message: data.message || 'Verification failed.' };
+    } catch (error) {
+      console.error('Failed to connect to backend:', error);
+      return { success: false, message: 'Unable to connect to the server.' };
     }
   };
 
   const logout = () => setIsAuthenticated(false);
 
   return (
-    // 3. Expose register to the rest of the app
-    <AuthContext.Provider value={{ isAuthenticated,user, login, register, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, login, requestOtp, verifyOtp, logout }}>
       {children}
     </AuthContext.Provider>
   );
@@ -72,6 +90,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth() {
   const context = useContext(AuthContext);
-  if (!context) throw new Error("useAuth must be used within an AuthProvider");
+  if (!context) throw new Error('useAuth must be used within an AuthProvider');
   return context;
 }

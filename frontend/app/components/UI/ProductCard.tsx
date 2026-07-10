@@ -1,7 +1,10 @@
+import { useState } from "react";
 import { Link } from "react-router";
+import { useCart } from "~/context/CartContext";
 import { useWishlist } from "~/context/WishlistContext";
 
-// 1. Updated the interface to match your live MongoDB Product Schema
+import HeartCursor from "./HoverAni/pointer";
+
 interface ProductProps {
   product: {
     _id: string;
@@ -15,58 +18,72 @@ interface ProductProps {
 }
 
 export default function ProductCard({ product }: ProductProps) {
+  const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist(); 
   
   const isSaved = isInWishlist(product._id);
   
-  // Safely grab the first image from the array, or show a placeholder if missing
+  // Mouse tracking state for the heart cursor
+  const [isHovered, setIsHovered] = useState(false);
+  const [isHoveringWishlist, setIsHoveringWishlist] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setMousePos({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    });
+  };
+
   const displayImage = product.imageUrl && product.imageUrl.length > 0 
     ? product.imageUrl[0] 
     : 'https://via.placeholder.com/400x500?text=No+Image';
 
   return (
-    // 2. Wrap the whole card in a Link so it is clickable!
     <Link to={`/product/${product._id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
       <div className="product-card" style={{ cursor: 'pointer', transition: 'transform 0.2s ease' }}>
         
-        <div className="product-img" style={{ aspectRatio: '4/5', backgroundColor: 'var(--cream)', borderRadius: '8px', overflow: 'hidden', position: 'relative' }}>
-          
-          {/* 3. Replaced the dummy emoji with your live Cloudinary image */}
+        {/* IMAGE WRAPPER: Added mouse event listeners and 'cursor: none' */}
+        <div 
+          className="product-img" 
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          onMouseMove={handleMouseMove}
+          style={{ aspectRatio: '4/5', backgroundColor: 'var(--cream)', borderRadius: '8px', overflow: 'hidden', position: 'relative', cursor: 'none' }}
+        >
+          <HeartCursor 
+            isVisible={isHovered && !isHoveringWishlist} 
+            x={mousePos.x} 
+            y={mousePos.y} 
+          />
+
           <img 
             src={displayImage} 
             alt={product.name} 
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
           />
           
-          {/* The Heart Button (Kept your wishlist logic intact!) */}
           <button 
             className="p-wish" 
             onClick={(e) => {
-              e.preventDefault(); // This stops the Link from triggering when they just want to favorite it
+              e.preventDefault(); 
               toggleWishlist(product);
             }}
             style={{ 
-              position: 'absolute', 
-              top: '12px', 
-              right: '12px',
+              position: 'absolute', top: '12px', right: '12px',
               color: isSaved ? 'var(--red)' : 'var(--brown-muted)',
-              background: 'white',
-              border: 'none',
-              borderRadius: '50%',
-              width: '32px',
-              height: '32px',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+              background: 'white', border: 'none', borderRadius: '50%',
+              width: '32px', height: '32px', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.1)', zIndex: 10
             }}
           >
             {isSaved ? '❤️' : '🤍'}
           </button>
         </div>
 
-        {/* 4. The updated info container using real database fields */}
+        {/* INFO WRAPPER */}
         <div className="product-info" style={{ marginTop: '12px' }}>
           <div className="product-name" style={{ fontSize: '16px', fontWeight: 600 }}>
             {product.name}
@@ -76,10 +93,24 @@ export default function ProductCard({ product }: ProductProps) {
             {product.category} • {product.condition}
           </div>
           
-          <div className="product-price-row" style={{ marginTop: '8px' }}>
+          <div className="product-price-row" style={{ marginTop: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span className="price-now" style={{ fontSize: '16px', fontWeight: 700 }}>
-            ₹{product.price}
+              ₹{product.price}
             </span>
+            
+            {/* FIXED: Added e.preventDefault() so it adds to cart without leaving the page! */}
+            <button 
+              onClick={(e) => {
+                e.preventDefault();
+                addToCart(product);
+              }}
+              style={{
+                padding: '6px 12px', backgroundColor: 'var(--brown)', 
+                color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer'
+              }}
+            >
+              Add to Cart
+            </button>
           </div>
         </div>
 

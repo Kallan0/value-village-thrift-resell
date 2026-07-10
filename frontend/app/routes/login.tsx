@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router";
 import { useAuth } from "../context/AuthContext";
+import confetti from "canvas-confetti";
 
 export default function Login() {
   // 1. Tell React to remember what the user types
@@ -14,6 +15,32 @@ export default function Login() {
   
   // If they were redirected here from a protected page, send them back there after login
   const from = location.state?.from || "/";
+  
+  const triggerConfetti = () => {
+    const end = Date.now() + 2 * 1000; // Fires for 2 seconds
+    const colors = ["#ec4899", "#8b5cf6", "#fbbf24"]; // Pink, Purple, Yellow
+
+    (function frame() {
+      confetti({
+        particleCount: 5,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0 },
+        colors: colors
+      });
+      confetti({
+        particleCount: 5,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1 },
+        colors: colors
+      });
+
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      }
+    }());
+  };
 
   // 2. The function that runs when they click "Sign In"
   const handleLogin = async (e: React.FormEvent) => {
@@ -23,6 +50,11 @@ export default function Login() {
     const success = await login(email, password);
     
     if (success) {
+      triggerConfetti();
+
+      setTimeout(() => {
+           // window.location.href = "/login"; or navigate("/login");
+        }, 2500);
       navigate(from, { replace: true });
     }
   };

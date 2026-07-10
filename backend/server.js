@@ -14,6 +14,10 @@ const Product = require('./models/Product');
 const upload = require('./middleware/upload');
 const Chatlog = require('./models/Chatlog');
 
+const sendEmail = require('./utils/sendEmail'); // Import the email utility
+
+const pendingRegistrations = new Map();
+
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -75,31 +79,77 @@ app.post('/api/auth/login', async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-// --- THE REGISTER ROUTE ---
-app.post('/api/auth/register', async (req, res) => {
+const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString();
+
+app.post('/api/auth/request-otp', async (req, res) => {
   try {
     const { firstName, lastName, email, password } = req.body;
+    const cleanEmail = (email || '').trim().toLowerCase();
 
-    // 1. Check if the user already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: "An account with this email already exists." });
+    if (!firstName || !lastName || !cleanEmail || !password) {
+      return res.status(400).json({ message: 'Please fill in all registration fields.' });
     }
 
-    // 2. Create the new user and save to MongoDB
-    // Note: In a production app, you would hash this password using bcrypt!
-    const newUser = new User({ firstName, lastName, email, password });
-    await newUser.save();
+    const existingUser = await User.findOne({ email: new RegExp('^' + cleanEmail + '$', 'i') });
+    if (existingUser) {
+      return res.status(400).json({ message: 'An account with this email already exists.' });
+    }
 
-    // 3. Success! Send the user data back
-    res.status(201).json({ 
-      message: "Account created successfully!", 
-      user: { id: newUser._id, name: newUser.firstName, role: newUser.role } 
+    const otp = generateOtp();
+    pendingRegistrations.set(cleanEmail, {
+      firstName,
+      lastName,
+      email: cleanEmail,
+      password,
+      otp,
+      expiresAt: Date.now() + 5 * 60 * 1000
     });
 
+    console.log(`🔐 OTP for ${cleanEmail}: ${otp}`);
+    res.status(200).json({ message: 'OTP sent. Enter the code to complete registration.' });
   } catch (error) {
-    console.error("Register Error:", error);
-    res.status(500).json({ message: "Server error during registration." });
+    console.error('Request OTP Error:', error);
+    res.status(500).json({ message: 'Server error while sending OTP.' });
+  }
+});
+
+app.post('/api/auth/verify-otp', async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    const cleanEmail = (email || '').trim().toLowerCase();
+    const pendingRegistration = pendingRegistrations.get(cleanEmail);
+
+    if (!pendingRegistration) {
+      return res.status(400).json({ message: 'No pending registration found. Please request a new OTP.' });
+    }
+
+    if (pendingRegistration.expiresAt < Date.now()) {
+      pendingRegistrations.delete(cleanEmail);
+      return res.status(400).json({ message: 'OTP has expired. Please request a new one.' });
+    }
+
+    if (pendingRegistration.otp !== otp) {
+      return res.status(400).json({ message: 'Invalid OTP. Please try again.' });
+    }
+
+    pendingRegistrations.delete(cleanEmail);
+
+    const newUser = new User({
+      firstName: pendingRegistration.firstName,
+      lastName: pendingRegistration.lastName,
+      email: pendingRegistration.email,
+      password: pendingRegistration.password
+    });
+
+    await newUser.save();
+
+    res.status(201).json({
+      message: 'Account created successfully!',
+      user: { id: newUser._id, name: newUser.firstName, role: newUser.role }
+    });
+  } catch (error) {
+    console.error('Verify OTP Error:', error);
+    res.status(500).json({ message: 'Server error during verification.' });
   }
 });
 
@@ -282,5 +332,40 @@ app.delete('/api/chat/faqs/:id', async (req, res) => {
     res.status(200).json({ message: "FAQ deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: "Failed to delete FAQ" });
+  }
+});
+
+// --- OTP GENERATION ROUTE ---
+app.post('/api/auth/request-otp', async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    // 1. Generate the 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // 2. Prepare the email content
+    const message = `Your verification code is: ${otp}. It is valid for 5 minutes.`;
+
+    // 3. Send the email using your utility
+    await sendEmail({
+      email: email, 
+      subject: 'Your OTP Verification Code',
+      message: message,
+      html: `<h2>Welcome!</h2><p>Your verification code is: <strong>${otp}</strong></p>`
+    });
+
+    // ⚠️ IMPORTANT: We will eventually need to save the OTP to MongoDB right here 
+    // before sending the success response, so we can verify it later!
+
+    // 4. Tell the frontend it worked so it switches to Step 2
+    res.status(200).json({ message: "OTP sent successfully!" });
+    
+  } catch (error) {
+    console.error("OTP Route Error:", error);
+    res.status(500).json({ message: "Failed to send OTP" });
   }
 });

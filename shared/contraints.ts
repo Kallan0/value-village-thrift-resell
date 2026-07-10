@@ -24,3 +24,4 @@ export const SELLER_CONSTRAINTS = {
   MAX_IMAGE_FILE_SIZE_MB: 5,
   ALLOWED_IMAGE_TYPES: ['image/jpeg', 'image/png', 'image/webp'],
 };
+

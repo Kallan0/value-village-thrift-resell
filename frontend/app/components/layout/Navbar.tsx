@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router";
 import { useAuth } from "../../context/AuthContext";
 import SearchBar from "../UI/SearchBar";
+import { ShoppingBag, User  } from "lucide-react";
 
 export default function Navbar() {
   const { isAuthenticated, logout } = useAuth();
@@ -53,10 +54,11 @@ export default function Navbar() {
         <SearchBar/>
         <Link to="/wishlist" className="nav-icon" title="Wishlist" onClick={closeMenu} style={{ textDecoration: 'none' }}>🤍</Link>        
         <Link to="/cart" className="nav-icon" title="Cart" onClick={closeMenu} style={{ position: 'relative', textDecoration: 'none' }}>
-          🛍️<span className="cart-badge">2</span>
+          <ShoppingBag/><span className="cart-badge">2</span>
         </Link>
         <div className="nav-icon" title="Account" onClick={handleProfileClick} style={{ cursor: 'pointer' }}>
-          {isAuthenticated ? '🟢' : '👤'} 
+          {isAuthenticated ?
+           <User fill ="currentColor"/> : <User/>} 
         </div>
       </div>
     </nav>

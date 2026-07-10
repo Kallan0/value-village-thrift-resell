@@ -3058,3 +3058,33 @@ body {
   color: var(--text-main);
   transition: background-color 0.3s ease, color 0.3s ease; /* Smooth fade effect */
 }
+
+/* --Lucide react icons -- */
+svg.lucide {
+  width: max-content;
+  height: max-content;
+}
+
+/* --- CUSTOM MARQUEE ANIMATION --- */
+.marquee-content {
+  animation: custom-scroll linear infinite;
+}
+
+.marquee-reverse {
+  animation-direction: reverse;
+}
+
+/* Pauses the scrolling when the user hovers over a review! */
+.marquee-content:hover {
+  animation-play-state: paused;
+}
+
+@keyframes custom-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    /* Scrolls exactly half the width (since we render the items twice) minus half the gap */
+    transform: translateX(calc(-50% - 8px));
+  }
+}

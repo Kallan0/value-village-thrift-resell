@@ -12,6 +12,7 @@ import { WishlistProvider } from "./context/WishlistContext";
 import { useEffect, useState } from "react";
 import "./app.css";
 import Chatbot from "./components/UI/ChatBot";
+import { CartProvider } from "./context/CartContext";
 
 
 export default function Root() {
@@ -38,11 +39,13 @@ export default function Root() {
       <body>
        <AuthProvider>
           <WishlistProvider> {/* <-- 2. Wrap the app */}
+            <CartProvider>
             <Navbar />
             <div style={{ paddingTop: '68px', minHeight: '100vh' }}>
               <Outlet context={{theme, setTheme}} />
               <Chatbot/>
             </div>
+            </CartProvider>
             <Footer />
           </WishlistProvider>
         </AuthProvider>

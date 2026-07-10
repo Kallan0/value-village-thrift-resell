@@ -1,144 +1,119 @@
 import { Link } from "react-router";
+// Assuming you have a context similar to WishlistContext. Adjust the import path if needed!
+import { useCart } from "../context/CartContext"; 
+import { ShoppingCart, Trash2} from "lucide-react";
 
 export default function Cart() {
-  const cartItems = [
-    { id: 1, seller: "@thrift.lover", sales: 342, rating: 4.9, name: "Levi's Denim Jacket — Vintage '90s", size: "Size S", condition: "Like New", color: "Stone Blue", emoji: "👗", price: 38, was: 120, save: 82 },
-    { id: 2, seller: "@bag.boutique", sales: 891, rating: 5.0, name: "Coach Leather Tote — Classic", size: "One Size", condition: "Very Good", color: "Tan", emoji: "👜", price: 78, was: 280, save: 202 },
-    { id: 3, seller: "@menswear.finds", sales: 156, rating: 4.8, name: "Ralph Lauren Oxford Shirt — Slim Fit", size: "Size L", condition: "Excellent", color: "White / Blue stripe", emoji: "👔", price: 22, was: 85, save: 63 }
-  ];
+  const { cartItems, removeFromCart, updateQuantity } = useCart();
 
-  const savedItems = [
-    { id: 4, name: "Wool Peacoat", price: 45, emoji: "🧥" },
-    { id: 5, name: "Straw Sun Hat", price: 12, emoji: "👒" }
-  ];
+  // 1. Calculate dynamic totals based on real data
+  const subtotal = cartItems.reduce((sum, item) => sum + (Number(item.price) * (item.quantity || 1)), 0);
+  const shipping = subtotal > 2000 ? 0 : 150; // Free shipping over ₹2000
+  const total = subtotal + shipping;
 
+  // 2. The Indian Rupee Formatter we set up earlier
+  const formatPrice = (amount: number | string) => {
+    // Number(amount) forces strings like "500" to become math-safe 500
+    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(Number(amount));
+  };
+
+  // ─── EMPTY STATE ────────────────────────────────────────────────────────
+  if (cartItems.length === 0) {
+    return (
+      <div className="page-content" style={{ backgroundColor: 'var(--cream)', minHeight: 'calc(100vh - 68px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 20px' }}>
+        <div style={{ fontSize: '80px', marginBottom: '24px', opacity: 0.5 }}>
+         <ShoppingCart size="{80}" strokeWidth="{1}"/>
+        </div>
+        <h1 style={{ color: 'var(--brown)', fontSize: '48px', textAlign: 'center', margin: '0 0 16px 0' }}>
+          YOUR CART IS <span style={{ color: 'var(--red)' }}>EMPTY</span>
+        </h1>
+        <p style={{ color: 'var(--brown-muted)', marginBottom: '32px', fontSize: '15px', textAlign: 'center', maxWidth: '400px' }}>
+          Looks like you haven't added anything yet. Discover unique thrifted pieces before they are gone!
+        </p>
+        <Link to="/shop">
+          <button style={{ padding: '16px 32px', fontSize: '14px', backgroundColor: 'var(--brown)', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}>
+            + EXPLORE THRIFT FINDS
+          </button>
+        </Link>
+      </div>
+    );
+  }
+
+  // ─── POPULATED STATE ────────────────────────────────────────────────────
   return (
-    <div className="page-content cart-layout">
-      {/* LEFT COLUMN: CART ITEMS */}
-      <div className="cart-main">
-        <div className="cart-header-row">
-          <div className="cart-h1-group">
-            <h1 className="cart-h1" style={{ marginBottom: 0 }}>YOUR CART</h1>
-            <div className="cart-count-pill">3 items</div>
-          </div>
-          <button className="clear-all">Clear all</button>
-        </div>
-
-        {/* Shipping Banner */}
-        <div className="shipping-banner">
-          <div className="shipping-banner-left">
-            🚚 You're <span>$8.00</span> away from <span>FREE shipping!</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <div className="progress-track"><div className="progress-fill" style={{ width: '77%' }}></div></div>
-            <div className="shipping-amt">$27/$35</div>
-          </div>
-        </div>
-
-        {/* Cart Item List */}
-        <div>
+    <div className="page-content" style={{ backgroundColor: 'var(--cream)', minHeight: 'calc(100vh - 68px)', padding: '48px 64px' }}>
+      <h1 style={{ color: 'var(--brown)', fontSize: '32px', marginBottom: '32px' }}>MY <span>CART</span></h1>
+      
+      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '48px', alignItems: 'start' }}>
+        
+        {/* LEFT COLUMN: The Cart Items */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           {cartItems.map((item) => (
-            <div key={item.id} className="cart-item-card">
-              <div className="cart-item-img">{item.emoji}</div>
-              <div className="cart-item-body">
-                <div className="seller-info">
-                  <span>⭐</span> {item.seller} · {item.sales} sales · {item.rating} rating
-                </div>
-                <div className="cart-item-name">{item.name}</div>
-                <div className="cart-item-meta" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                  {item.size} <span className="item-condition-badge">{item.condition}</span> {item.color}
-                </div>
-                <div className="cart-item-actions">
-                  <div className="qty-ctrl">
-                    <button className="qty-b">−</button>
-                    <div className="qty-n">1</div>
-                    <button className="qty-b">+</button>
-                  </div>
-                  <button className="action-link">Remove</button>
-                  <button className="action-link">Save for later</button>
-                </div>
+            <div key={item._id} style={{ display: 'flex', gap: '24px', backgroundColor: '#fff', padding: '24px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+              
+              {/* Product Image */}
+              <div style={{ width: '120px', height: '120px', borderRadius: '8px', overflow: 'hidden', backgroundColor: '#eee', flexShrink: 0 }}>
+                {item.imageUrl && item.imageUrl.length > 0 ? (
+                   <img src={item.imageUrl[0]} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : (
+                   <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>No Image</div>
+                )}
               </div>
-              <div className="price-col">
-                <div className="cart-item-price">${item.price}</div>
-                <div className="price-was">${item.was}</div>
-                <div className="savings-pill">You save ${item.save}</div>
+
+              {/* Product Details */}
+              <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '4px' }}>{item.category || "General"} • {item.condition || "Used"}</div>
+                    <div style={{ fontSize: '18px', fontWeight: 600, color: 'var(--text-main)', marginBottom: '8px' }}>{item.name}</div>
+                    <div style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-main)' }}>{formatPrice(item.price)}</div>
+                  </div>
+                  
+                  {/* Remove Button */}
+                  <button onClick={() => removeFromCart(item._id)} style={{ background: 'none', border: 'none', color: 'var(--red)', cursor: 'pointer', fontSize: '20px' }}>
+                    <Trash2 size="{20}"/>
+                  </button>
+                </div>
+
+                {/* Quantity Controls */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginTop: '16px' }}>
+                  <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>Quantity:</span>
+                  <div style={{ display: 'flex', alignItems: 'center', border: '1px solid var(--border-color)', borderRadius: '6px', overflow: 'hidden' }}>
+                    <button onClick={() => updateQuantity(item._id, (item.quantity || 1) - 1)} style={{ padding: '4px 12px', background: 'var(--bg-base)', border: 'none', cursor: 'pointer' }}>-</button>
+                    <span style={{ padding: '4px 12px', background: '#fff', fontSize: '14px', fontWeight: 600 }}>{item.quantity || 1}</span>
+                    <button onClick={() => updateQuantity(item._id, (item.quantity || 1) + 1)} style={{ padding: '4px 12px', background: 'var(--bg-base)', border: 'none', cursor: 'pointer' }}>+</button>
+                  </div>
+                </div>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Saved For Later */}
-        <div className="saved-section">
-          <h2 className="saved-h2">SAVED FOR LATER — 2 ITEMS</h2>
-          <div className="saved-grid">
-            {savedItems.map(item => (
-              <div key={item.id} className="saved-card">
-                <div className="saved-img">{item.emoji}</div>
-                <div>
-                  <div className="saved-name">{item.name}</div>
-                  <div className="saved-price">${item.price}</div>
-                </div>
-                <button className="btn-outline-sm">Move to Cart</button>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* RIGHT COLUMN: ORDER SUMMARY */}
-      <div className="cart-panel">
-        <h2 className="cart-panel-title">ORDER SUMMARY</h2>
-        
-        <div style={{ marginBottom: '24px' }}>
-          <div className="sum-row"><span className="sk">Subtotal (3 items)</span> <span>$138.00</span></div>
-          <div className="sum-row"><span className="sk">Original retail value</span> <span style={{ textDecoration: 'line-through' }}>$485.00</span></div>
-          <div className="sum-row"><span className="sk">Shipping</span> <span style={{ color: '#4A6741' }}>FREE 🎉</span></div>
-          <div className="sum-row"><span className="sk">Estimated tax (BC)</span> <span>$11.04</span></div>
-        </div>
-
-        <div className="promo-row">
-          <input type="text" className="promo-inp" placeholder="PROMO CODE" />
-          <button className="promo-btn">APPLY</button>
-        </div>
-
-        <div className="total-row">
-          <span className="tk">Total</span>
-          <div style={{ textAlign: 'right' }}>
-            <div className="tv">$149.04</div>
-            <div style={{ fontSize: '11px', color: '#4A6741', fontWeight: 700, marginTop: '4px' }}>
-              🎉 You're saving $347 vs. retail!
+        {/* RIGHT COLUMN: Order Summary */}
+        <div style={{ backgroundColor: '#fff', padding: '32px', borderRadius: '12px', border: '1px solid var(--border-color)', position: 'sticky', top: '100px' }}>
+          <h2 style={{ fontSize: '20px', color: 'var(--text-main)', marginBottom: '24px', borderBottom: '1px solid var(--border-color)', paddingBottom: '16px' }}>Order Summary</h2>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)', fontSize: '15px' }}>
+              <span>Subtotal ({cartItems.length} items)</span>
+              <span>{formatPrice(subtotal)}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)', fontSize: '15px' }}>
+              <span>Shipping</span>
+              <span>{shipping === 0 ? <span style={{ color: 'green', fontWeight: 600 }}>Free</span> : formatPrice(shipping)}</span>
             </div>
           </div>
-        </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '24px' }}>
-          <button className="btn-primary" style={{ width: '100%', fontSize: '14px', padding: '16px' }}>
-            🔒 SECURE CHECKOUT →
+          <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-main)', fontSize: '20px', fontWeight: 700, borderTop: '1px solid var(--border-color)', paddingTop: '24px', marginBottom: '32px' }}>
+            <span>Total</span>
+            <span>{formatPrice(total)}</span>
+          </div>
+
+          <button style={{ width: '100%', padding: '16px', backgroundColor: 'var(--brown)', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '16px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s ease' }}>
+            PROCEED TO CHECKOUT
           </button>
-          <button className="btn-outline" style={{ width: '100%', border: '1.5px solid var(--border)' }}>
-            ← CONTINUE SHOPPING
-          </button>
         </div>
-
-        {/* Trust Signals & Payment info */}
-        <div className="trust-list">
-          <div className="trust-item">🔒 SSL encrypted · 100% secure</div>
-          <div className="trust-item">↩️ Free 30-day returns on all items</div>
-          <div className="trust-item">⭐ All sellers verified by Value Village</div>
-          <div className="trust-item">🇨🇦 Ships from Canadian sellers</div>
-        </div>
-
-        <div className="payment-icons">
-          <div className="pay-icon"><span style={{ color: '#1A1F71' }}>💳</span> Visa</div>
-          <div className="pay-icon"><span style={{ color: '#EB001B' }}>💳</span> MC</div>
-          <div className="pay-icon">🍎 Pay</div>
-          <div className="pay-icon"><span style={{ color: '#003087' }}>🅿️</span> PayPal</div>
-          <div className="pay-icon" style={{ color: '#FFB3C7' }}>Klarna</div>
-        </div>
-
-        <div className="info-box">
-          🏷️ <span>Items ship from 3 different sellers.</span> Sellers have 2 business days to confirm. You'll be notified of any issues before payment is taken.
-        </div>
+        
       </div>
     </div>
   );

@@ -1,5 +1,7 @@
 import { Link } from "react-router";
+import Text3DFlip from "~/components/UI/3DFliptext";
 import ProductCard from "../components/UI/ProductCard";
+import ReviewMarquee from "~/components/UI/ReviewMarquee";
 
 export default function Home() {
   const marqueeWords = [
@@ -34,13 +36,39 @@ export default function Home() {
       <div className="hero">
         <div className="hero-left">
           <div className="hero-kicker">🏷️ New drops every Tuesday</div>
-          <div className="hero-title">
-            FIND
-            <br />
-            YOUR
-            <br />
-            <span className="red">STYLE.</span>
-          </div>
+          
+          <div className="hero-title" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+  
+  {/* Line 1 */}
+  <Text3DFlip
+    textClassName="text-black"
+    flipTextClassName="text-[var(--brown)]"
+    rotateDirection="top"
+    staggerDuration={0.03}
+  >
+    FIND
+  </Text3DFlip>
+
+  {/* Line 2 */}
+  <Text3DFlip
+    textClassName="text-black"
+    flipTextClassName="text-[var(--brown)]"
+    rotateDirection="top"
+    staggerDuration={0.03}
+  >
+    YOUR
+  </Text3DFlip>
+  <Text3DFlip
+    className="red" 
+    textClassName="text-[var(--red, #ef4444)]" 
+    flipTextClassName="text-black" 
+    rotateDirection="top"
+    staggerDuration={0.03}
+  >
+    STYLE.
+  </Text3DFlip>
+
+</div>
           <div className="hero-subtitle">Pre-loved. Perfectly priced.</div>
           <p className="hero-desc">
             Thousands of handpicked thrift finds from trusted resellers.
@@ -144,6 +172,14 @@ export default function Home() {
           ))}
         </div>
       </div>
+      <section className="reviews-section" style={{ padding: '60px 0' }}>
+        <h2 style={{ textAlign: 'center', marginBottom: '40px', color: 'var(--brown)' }}>
+          What Our Thrifters Say
+        </h2>
+        
+        <ReviewMarquee />
+        
+      </section>
     </div>
   );
 }
