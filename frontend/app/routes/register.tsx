@@ -25,7 +25,7 @@ export default function Register() {
 
   const triggerConfetti = () => {
     const end = Date.now() + 2 * 1000; // Fires for 2 seconds
-    const colors = ["#ec4899", "#8b5cf6", "#fbbf24"]; // Pink, Purple, Yellow
+    const colors = ['var(--color-secondary)', "#8b5cf6", "#fbbf24"]; // Pink, Purple, Yellow
 
     (function frame() {
       confetti({

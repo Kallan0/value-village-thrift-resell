@@ -54,7 +54,6 @@ export default function Sell() {
     formData.append("price", price);
     formData.append("category", category);
     formData.append("condition", condition);
-    formData.append("sellerId", user.id); 
     
     // UPGRADE: Loop through all files and append them to the 'images' key
     imageUrl.forEach(image => {

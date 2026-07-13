@@ -1,0 +1,53 @@
+:root {
+  /* 🎨 1. LIGHT THEME COLORS */
+  --color-primary: #8b5cf6;       /* e.g., Purple */
+  --color-secondary: #ec4899;     /* e.g., Pink */
+  --color-bg: #fdfbf7;            /* Cream background */
+  --color-card: #ffffff;          /* Pure white card blocks */
+  --color-text-main: #1f2937;     /* Dark Charcoal */
+  --color-text-muted: #6b7280;    /* Grey for subtitles */
+  --color-border: #e5e7eb;        /* Subtle divider line */
+
+  /* 🅰️ 2. TYPOGRAPHY & FONTS */
+  --font-family-headings: "Geist Sans", "Helvetica Neue", sans-serif;
+  --font-family-body: "Inter", system-ui, sans-serif;
+
+  /* Font Weights */
+  --weight-normal: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* Font Sizes */
+  --size-h1: 3.5rem;       /* ~56px for Hero Titles */
+  --size-h2: 2.25rem;      /* ~36px for Section Titles */
+  --size-h3: 1.5rem;       /* ~24px for Product Card Names */
+  --size-body: 1rem;       /* ~16px for Paragraphs/Text */
+  --size-sm: 0.875rem;     /* ~14px for Badges/Meta text */
+
+  /* 📐 3. MISSING CRITICAL TOKENS (Spacing & Layout Consistency) */
+  --radius-sm: 4px;
+  --radius-md: 8px;        /* Used for product-img corners */
+  --radius-lg: 12px;       /* Used for review-card corners */
+  
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;      /* Default block spacing gap */
+  --spacing-lg: 24px;
+  
+  --transition-fast: all 0.2s ease-in-out;
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 🌙 4. DARK THEME OVERRIDES */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-primary: #a78bfa;     /* Lighter purple for visibility */
+    --color-secondary: #f472b6;   /* Lighter pink */
+    --color-bg: #111827;          /* Midnight Dark background */
+    --color-card: #1f2937;        /* Sleek charcoal card blocks */
+    --color-text-main: #f9fafb;   /* Near white */
+    --color-text-muted: #9ca3af;  /* Light grey */
+    --color-border: #374151;      /* Darker border lines */
+  }
+}

@@ -93,7 +93,7 @@ export default function FaqManager() {
             value={formData.question}
             onChange={(e) => setFormData({...formData, question: e.target.value})}
             required
-            style={{ padding: '10px', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-base)', color: 'var(--text-main)', fontFamily: 'inherit' }}
+            style={{ padding: '10px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-base)', color: 'var(--text-main)', fontFamily: 'inherit' }}
           />
           <textarea 
             placeholder="Answer" 
@@ -101,7 +101,7 @@ export default function FaqManager() {
             onChange={(e) => setFormData({...formData, answer: e.target.value})}
             required
             rows={3}
-            style={{ padding: '10px', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-base)', color: 'var(--text-main)', fontFamily: 'inherit' }}
+            style={{ padding: '10px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-base)', color: 'var(--text-main)', fontFamily: 'inherit' }}
           />
           
           <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
@@ -125,7 +125,7 @@ export default function FaqManager() {
           </div>
 
           <div style={{ display: 'flex', gap: '12px' }}>
-            <button type="submit" style={{ padding: '10px 24px', borderRadius: '8px', backgroundColor: 'var(--brown)', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 600 }}>
+            <button type="submit" style={{ padding: '10px 24px', borderRadius: 'var(--radius-md)', backgroundColor: 'var(--brown)', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 600 }}>
               {editingId ? "Update FAQ" : "Save FAQ"}
             </button>
             {editingId && (
