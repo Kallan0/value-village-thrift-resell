@@ -88,80 +88,141 @@ useEffect(() => {
     }
   };
 
-  return (
-    <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 999 }}>
-      
-      {/* THE TOGGLE BUTTON */}
-      {!isOpen && (
-        <button 
-          onClick={() => setIsOpen(true)}
-          style={{ width: '60px', height: '60px', borderRadius: '50%', backgroundColor: 'var(--white)', color: '#ff0505', border: '2px solid #ff0505', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.15)', fontSize: '24px' }}
-        >          💬
-        </button>
-      )}
+ return (
+  <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 999, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" }}>
+    
+    {/* THE TOGGLE BUTTON */}
+    {!isOpen && (
+      <button 
+        onClick={() => setIsOpen(true)}
+        style={{ 
+          width: '60px', height: '60px', borderRadius: '50%', 
+          background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)', 
+          color: '#fff', border: 'none', cursor: 'pointer', 
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)', fontSize: '24px',
+          display: 'flex', justifyContent: 'center', alignItems: 'center'
+        }}
+      > 
+        💬
+      </button>
+    )}
 
-      {/* THE CHAT WINDOW */}
-      {isOpen && (
-        <div style={{ width: '320px', height: '480px', backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: '12px', display: 'flex', flexDirection: 'column', boxShadow: '0 10px 25px rgba(0,0,0,0.2)', overflow: 'hidden' }}>
-          
-          {/* Header */}
-          <div style={{ padding: '16px', backgroundColor: 'var(--brown)', color: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 600 }}>Support Bot</h3>
-            <button onClick={() => setIsOpen(false)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontSize: '16px' }}>✖</button>
+    {/* THE CHAT WINDOW */}
+    {isOpen && (
+      <div style={{ 
+        width: '350px', height: '550px', backgroundColor: '#fff', 
+        borderRadius: '24px', display: 'flex', flexDirection: 'column', 
+        boxShadow: '0 10px 40px rgba(0,0,0,0.15)', overflow: 'hidden' 
+      }}>
+        
+        {/* Header */}
+        <div style={{ 
+          padding: '16px 20px', backgroundColor: '#fff', 
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          boxShadow: '0 2px 5px rgba(0,0,0,0.05)', zIndex: 2
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            {/* Fake Avatar */}
+            <div style={{ 
+              width: '32px', height: '32px', borderRadius: '50%', 
+              background: 'linear-gradient(45deg, #f09433, #bc1888)', 
+              display: 'flex', justifyContent: 'center', alignItems: 'center', 
+              color: '#fff', fontSize: '14px', fontWeight: 'bold' 
+            }}>
+              B
+            </div>
+            <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 600, color: '#262626' }}>Support Bot</h3>
           </div>
+          <button onClick={() => setIsOpen(false)} style={{ background: 'none', border: 'none', color: '#262626', cursor: 'pointer', fontSize: '20px', fontWeight: 'bold' }}>✕</button>
+        </div>
 
-          {/* Chat History */}
-          <div style={{ flexGrow: 1, padding: '16px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {messages.map(msg => (
-              <div key={msg.id} style={{ display: 'flex', flexDirection: 'column', alignItems: msg.sender === 'user' ? 'flex-end' : 'flex-start' }}>
-                
-                {/* The Bubble */}
-                <div style={{ 
-                  maxWidth: '85%', padding: '10px 14px', borderRadius: '16px', fontSize: '14px', lineHeight: '1.4',
-                  backgroundColor: msg.sender === 'user' ? 'var(--brown)' : 'var(--bg-base)',
-                  color: msg.sender === 'user' ? '#fff' : 'var(--text-main)',
-                  borderBottomRightRadius: msg.sender === 'user' ? '4px' : '16px',
-                  borderBottomLeftRadius: msg.sender === 'bot' ? '4px' : '16px',
-                }}>
-                  {msg.text}
-                </div>
-
-                {/* The Feedback Buttons (Only show for bot answers that have a dbLogId and haven't been rated yet) */}
-                {msg.sender === 'bot' && msg.dbLogId && !msg.feedbackGiven && (
-                  <div style={{ display: 'flex', gap: '8px', marginTop: '6px', marginLeft: '4px' }}>
-                    <button onClick={() => submitFeedback(msg.dbLogId!, msg.id, 'good')} style={{ fontSize: '12px', padding: '4px 8px', borderRadius: '12px', border: '1px solid var(--border-color)', background: 'transparent', color: 'var(--text-muted)', cursor: 'pointer' }}>👍</button>
-                    <button onClick={() => submitFeedback(msg.dbLogId!, msg.id, 'bad')} style={{ fontSize: '12px', padding: '4px 8px', borderRadius: '12px', border: '1px solid var(--border-color)', background: 'transparent', color: 'var(--text-muted)', cursor: 'pointer' }}>👎</button>
-                  </div>
-                )}
-                {msg.feedbackGiven && (
-                   <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px', marginLeft: '4px' }}>Thanks for the feedback!</span>
-                )}
+        {/* Chat History */}
+        <div style={{ flexGrow: 1, padding: '20px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '16px', backgroundColor: '#fff' }}>
+          {messages.map(msg => (
+            <div key={msg.id} style={{ display: 'flex', flexDirection: 'column', alignItems: msg.sender === 'user' ? 'flex-end' : 'flex-start' }}>
+              
+              {/* The Bubble */}
+              <div style={{ 
+                maxWidth: '75%', padding: '12px 16px', fontSize: '15px', lineHeight: '1.4',
+                backgroundColor: msg.sender === 'user' ? '#3797F0' : '#EFEFEF',
+                color: msg.sender === 'user' ? '#fff' : '#262626',
+                borderRadius: '22px',
+                borderBottomRightRadius: msg.sender === 'user' ? '4px' : '22px',
+                borderBottomLeftRadius: msg.sender === 'bot' ? '4px' : '22px',
+              }}>
+                {msg.text}
               </div>
-            ))}
-          </div>
 
-          {/* FAQ Options (The "Keyboard") */}
-{/* FAQ Options (The Dynamic "Keyboard") */}
-          <div style={{ padding: '16px', borderTop: '1px solid var(--border-color)', backgroundColor: 'var(--bg-base)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 600 }}>Ask a question:</span>
-            
-            {dynamicFAQ.length === 0 ? (
-               <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Loading options...</span>
-            ) : (
-              dynamicFAQ.map((item, idx) => (
+              {/* The Feedback Buttons */}
+              {msg.sender === 'bot' && msg.dbLogId && !msg.feedbackGiven && (
+                <div style={{ display: 'flex', gap: '12px', marginTop: '6px', marginLeft: '8px' }}>
+                  <button onClick={() => submitFeedback(msg.dbLogId!, msg.id, 'good')} style={{ fontSize: '14px', padding: '0', border: 'none', background: 'transparent', cursor: 'pointer', filter: 'grayscale(100%)', opacity: 0.5, transition: '0.2s' }}>👍</button>
+                  <button onClick={() => submitFeedback(msg.dbLogId!, msg.id, 'bad')} style={{ fontSize: '14px', padding: '0', border: 'none', background: 'transparent', cursor: 'pointer', filter: 'grayscale(100%)', opacity: 0.5, transition: '0.2s' }}>👎</button>
+                </div>
+              )}
+              {msg.feedbackGiven && (
+                 <span style={{ fontSize: '12px', color: '#8E8E8E', marginTop: '4px', marginLeft: '8px' }}>Thanks!</span>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Quick Replies (FAQs formatted as horizontal scrollable chips) */}
+        {dynamicFAQ.length > 0 && (
+          <div style={{ padding: '0 16px 12px', backgroundColor: '#fff' }}>
+            <style>
+              {`
+                .no-scrollbar::-webkit-scrollbar { display: none; }
+                .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+              `}
+            </style>
+            <div className="no-scrollbar" style={{ display: 'flex', gap: '8px', overflowX: 'auto', width: '100%', paddingBottom: '4px' }}>
+              {dynamicFAQ.map((item, idx) => (
                 <button 
                   key={idx} 
                   onClick={() => handleQuestionClick(item)}
-                  style={{ /* your existing button styles */ }}
+                  style={{ 
+                    padding: '8px 16px', borderRadius: '20px', border: '1px solid #DBDBDB', 
+                    backgroundColor: '#fff', color: '#262626', fontSize: '14px', cursor: 'pointer',
+                    whiteSpace: 'nowrap', flexShrink: 0
+                  }}
                 >
                   {item.question}
                 </button>
-              ))
-            )}
+              ))}
+            </div>
           </div>
+        )}
 
+        {/* The Textbox Input Area (Borderless, Gray Pill Background) */}
+        <div style={{ padding: '12px 16px 20px', backgroundColor: '#fff' }}>
+          <div style={{ 
+            display: 'flex', alignItems: 'center', backgroundColor: '#EFEFEF', 
+            borderRadius: '24px', padding: '4px 4px 4px 16px' 
+          }}>
+            <input 
+              type="text" 
+              placeholder="Message..." 
+              style={{ 
+                flexGrow: 1, border: 'none', background: 'transparent', 
+                outline: 'none', fontSize: '15px', color: '#262626', padding: '8px 0' 
+              }} 
+            />
+            <button 
+              style={{ 
+                border: 'none', background: '#3797F0', color: '#fff', 
+                borderRadius: '50%', width: '32px', height: '32px', 
+                display: 'flex', justifyContent: 'center', alignItems: 'center', 
+                cursor: 'pointer', marginLeft: '8px', fontWeight: 'bold'
+              }}
+            >
+              ↑
+            </button>
+          </div>
         </div>
-      )}
-    </div>
-  );
+
+      </div>
+    )}
+  </div>
+);
 }

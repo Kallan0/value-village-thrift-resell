@@ -2,6 +2,7 @@ import { createContext, useContext, useState, type ReactNode } from 'react';
 
 // 1. Define the exact shape of your User so the Sidebar doesn't crash
 export interface UserProfile {
+  id: string; // MongoDB ObjectId as a string
   name: string;
   email: string;
   phone?: string;
@@ -37,6 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setIsAuthenticated(true);
         // Map backend DB user to frontend profile shape (adding fallbacks if DB is missing fields)
         setUser({
+          id: data.user._id,
           name: `${data.user.firstName} ${data.user.lastName}`.trim() || data.user.name,
           email: data.user.email,
           phone: data.user.phone || "+91 XXXXX XXXXX", // Fallback until they edit it
@@ -86,6 +88,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (response.ok) {
         setIsAuthenticated(true);
         setUser({
+          id: data.user._id,
           name: `${data.user.firstName} ${data.user.lastName}`.trim() || data.user.name,
           email: data.user.email,
           phone: data.user.phone || "+91 XXXXX XXXXX",
