@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import toast from "react-hot-toast";
 
 // 1. Define the shape of a Cart Item (Matching your MongoDB data)
 export interface CartItem {
@@ -55,11 +56,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       
       if (existingItem) {
         // If it's already in the cart, just add 1 to the quantity
-        return prev.map(item => 
-          item._id === product._id 
-            ? { ...item, quantity: item.quantity + 1 } 
-            : item
-        );
+       toast.success(`${product.name} item already in cart!`);
       }
       
       // If it's new, add it with a starting quantity of 1
@@ -70,6 +67,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   // --- ACTION: Remove an item completely ---
   const removeFromCart = (id: string) => {
     setCartItems(prev => prev.filter(item => item._id !== id));
+    toast.error("Item removed from cart.");
   };
 
   // --- ACTION: Update quantity (+ or - buttons) ---

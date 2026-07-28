@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import "./app.css";
 import Chatbot from "./components/UI/ChatBot";
 import { CartProvider } from "./context/CartContext";
+import { Toaster } from "react-hot-toast";
 
 
 export default function Root() {
@@ -44,6 +45,25 @@ export default function Root() {
             <div style={{ paddingTop: '68px', minHeight: '100vh' }}>
               <Outlet context={{theme, setTheme}} />
               <Chatbot/>
+              <Toaster 
+          position="top-right" 
+          toastOptions={{
+            duration: 3000,
+            style: {
+              background: '#d71313',
+              color: '#fff',
+              borderRadius: '12px',
+              padding: '16px 24px',
+              fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+            },
+            success: {
+              iconTheme: {
+                primary: '#4ade80',
+                secondary: '#020202',
+              },
+            },
+          }} 
+        />
             </div>
             </CartProvider>
             <Footer />
