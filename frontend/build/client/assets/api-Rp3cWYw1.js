@@ -1,0 +1,1 @@
+async function e(e,t={}){let n=typeof window<`u`?localStorage.getItem(`value-village-token`):null,r=new Headers(t.headers||{});return n&&!r.has(`Authorization`)&&r.set(`Authorization`,`Bearer ${n}`),fetch(`http://localhost:5000${e}`,{...t,headers:r})}export{e as t};

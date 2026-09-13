@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import type { UserProfile } from "../../context/AuthContext";
 
@@ -11,6 +12,7 @@ interface UserProfileSidebarProps {
 }
 
 export default function UserProfileSidebar({ isOpen, onClose, user, onLogout, onSaveProfile }: UserProfileSidebarProps) {
+  const navigate = useNavigate();
   // State to handle inline editing
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({ name: user.name, email: user.email, phone: user.phone });
@@ -128,6 +130,30 @@ export default function UserProfileSidebar({ isOpen, onClose, user, onLogout, on
                 ) : (
                   <button onClick={() => setIsEditing(true)} style={{ width: '100%', padding: '10px', backgroundColor: 'transparent', color: 'var(--color-text-main)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontWeight: 'bold', transition: 'var(--transition-fast)' }}>
                     Edit Profile
+                  </button>
+                )}
+              </div>
+
+              {/* Quick Navigation Links */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: 'var(--spacing-md)' }}>
+                <button
+                  onClick={() => { navigate('/orders'); onClose(); }}
+                  style={{ width: '100%', padding: '10px 14px', backgroundColor: 'var(--bg-base, #f9f9f9)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', cursor: 'pointer', textAlign: 'left', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--color-text-main)' }}
+                >
+                  🛍️ My Orders
+                </button>
+                <button
+                  onClick={() => { navigate('/sell'); onClose(); }}
+                  style={{ width: '100%', padding: '10px 14px', backgroundColor: 'var(--bg-base, #f9f9f9)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', cursor: 'pointer', textAlign: 'left', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--color-text-main)' }}
+                >
+                  🏷️ Sell an Item
+                </button>
+                {user.role === 'admin' && (
+                  <button
+                    onClick={() => { navigate('/admin'); onClose(); }}
+                    style={{ width: '100%', padding: '10px 14px', backgroundColor: '#fef2f2', border: '1px solid #fca5a5', borderRadius: 'var(--radius-md)', cursor: 'pointer', textAlign: 'left', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px', color: '#b91c1c' }}
+                  >
+                    🛡️ Admin Command Center
                   </button>
                 )}
               </div>

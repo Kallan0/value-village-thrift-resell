@@ -1,35 +1,32 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import ProductCard from "../components/UI/ProductCard";
 import ReviewMarquee from "../components/UI/ReviewMarquee";
 import Text3DFlip from "../components/UI/3DFliptext";
+import { api } from "../lib/api";
 
 export default function Home() {
   const marqueeWords = [
     "PRE-LOVED", "VINTAGE", "GREAT DEALS", "FREE RETURNS", "THRIFT", "RESALE"
   ];
   const scrollingText = [...marqueeWords, ...marqueeWords, ...marqueeWords, ...marqueeWords];
-  const dummyProducts = [
-    {
-      _id: "1",
-      emoji: "👗",
-      name: "Levi's Denim Jacket '90s",
-      meta: "Size M · Like new · Women's",
-      priceNow: 38,
-      priceWas: 120,
-      savePercentage: 68,
-      badge: { type: "hot", text: "🔥 Hot" },
-    },
-    {
-      _id: "2",
-      emoji: "👟",
-      name: "Nike Air Max 90 Vintage",
-      meta: "Size 10 · Good condition",
-      priceNow: 54,
-      priceWas: 130,
-      savePercentage: 58,
-      badge: { type: "thrift", text: "Thrift" },
-    },
-  ];
+  
+  const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    const loadFeatured = async () => {
+      try {
+        const res = await api('/api/products');
+        if (res.ok) {
+          const data = await res.json();
+          setFeaturedProducts(data.slice(0, 4));
+        }
+      } catch (err) {
+        console.warn('Could not load live featured products', err);
+      }
+    };
+    loadFeatured();
+  }, []);
 
   return (
     <div className="page-content">
@@ -167,9 +164,15 @@ export default function Home() {
           </Link>
         </div>
         <div className="product-grid">
-          {dummyProducts.map((product) => (
-            <ProductCard key={product._id} product={product as any} />
-          ))}
+          {featuredProducts.length > 0 ? (
+            featuredProducts.map((product) => (
+              <ProductCard key={product._id} product={product} />
+            ))
+          ) : (
+            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '32px', color: 'var(--brown-muted)' }}>
+              Explore our full collection in the shop to find your next thrift gem!
+            </div>
+          )}
         </div>
       </div>
       <section className="reviews-section" style={{ padding: '60px 0' }}>

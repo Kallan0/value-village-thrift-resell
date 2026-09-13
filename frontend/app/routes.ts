@@ -29,6 +29,12 @@ export default [
   // Maps "/wishlist" to your sell.tsx file (once you create it)
   route("wishlist", "routes/wishlist.tsx"),
 
+  // Maps "/orders" to order history
+  route("orders", "routes/orders.tsx"),
+
+  // Maps order confirmation
+  route("order-success/:id", "routes/order-success.$id.tsx"),
+
   // Maps a dynamic URL like "/product/123" to a product details page
   route("product/:id", "routes/product.$id.tsx")
 ] satisfies RouteConfig;

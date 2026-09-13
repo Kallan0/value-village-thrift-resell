@@ -1,18 +1,22 @@
 import { useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router"; // Fixed react-router-dom import if needed
+import { Link, useNavigate, useLocation } from "react-router";
 import { useAuth } from "../../context/AuthContext";
+import { useCart } from "../../context/CartContext";
 import SearchBar from "../UI/SearchBar";
 import { ShoppingBag, User } from "lucide-react";
 import UserProfileSidebar from "../UI/UserProfileSidebar";
 
 export default function Navbar() {
-  // 1. Pull the REAL user data and functions from your global context
+  // 1. Pull the REAL user data and functions from global context
   const { user, logout, updateProfile } = useAuth(); 
+  const { cartItems } = useCart();
   const navigate = useNavigate();
   const location = useLocation();
   
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const totalCartCount = cartItems.reduce((acc, item) => acc + (item.quantity || 1), 0);
 
   // 2. The Traffic Cop Logic
   const handleProfileClick = () => {
@@ -24,10 +28,9 @@ export default function Navbar() {
   };
 
   const handleSaveProfile = async (updatedData: any) => {
-    // Updates the frontend context instantly so the UI feels fast
-    if (updateProfile) updateProfile(updatedData);
-    console.log("Sending to backend to save:", updatedData);
-    // TODO: Await fetch('/api/user/update', ...)
+    if (updateProfile) {
+      await updateProfile(updatedData);
+    }
   };
 
   const handleLogout = () => {
@@ -69,7 +72,8 @@ export default function Navbar() {
         <SearchBar/>
         <Link to="/wishlist" className="nav-icon" title="Wishlist" onClick={closeMenu} style={{ textDecoration: 'none' }}>🤍</Link>        
         <Link to="/cart" className="nav-icon" title="Cart" onClick={closeMenu} style={{ position: 'relative', textDecoration: 'none' }}>
-          <ShoppingBag/><span className="cart-badge">2</span>
+          <ShoppingBag/>
+          {totalCartCount > 0 && <span className="cart-badge">{totalCartCount}</span>}
         </Link>
         
         {/* 3. Wire the User Icon to the Traffic Cop function! */}

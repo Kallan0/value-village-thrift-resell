@@ -11,7 +11,7 @@ export default function Login() {
   
   const navigate = useNavigate();
   const location = useLocation();
-  const { login } = useAuth();
+  const { login, loginWithGoogle, loginWithApple } = useAuth();
   
   // If they were redirected here from a protected page, send them back there after login
   const from = location.state?.from || "/";
@@ -46,15 +46,25 @@ export default function Login() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault(); // Stop the page from refreshing
     
-    // Pass the actual email and password to our context!
     const success = await login(email, password);
-    
     if (success) {
       triggerConfetti();
+      navigate(from, { replace: true });
+    }
+  };
 
-      setTimeout(() => {
-           // window.location.href = "/login"; or navigate("/login");
-        }, 2500);
+  const handleGoogleLogin = async () => {
+    const success = await loginWithGoogle();
+    if (success) {
+      triggerConfetti();
+      navigate(from, { replace: true });
+    }
+  };
+
+  const handleAppleLogin = async () => {
+    const success = await loginWithApple();
+    if (success) {
+      triggerConfetti();
       navigate(from, { replace: true });
     }
   };
@@ -120,8 +130,8 @@ export default function Login() {
       <div className="auth-divider" style={{ marginTop: '32px' }}><span>Or continue with</span></div>
 
       <div className="social-row" style={{ marginTop: '24px' }}>
-        <button type="button" className="btn-social">🍎 Apple</button>
-        <button type="button" className="btn-social">🔵 Google</button>
+        <button type="button" className="btn-social" onClick={handleAppleLogin}>🍎 Apple</button>
+        <button type="button" className="btn-social" onClick={handleGoogleLogin}>🔵 Google</button>
       </div>
     </div>
   );

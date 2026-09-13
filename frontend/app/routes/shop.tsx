@@ -17,16 +17,24 @@ export default function Shop() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // 2. Setup URL Parameters for Category and Sorting
+  // 2. Setup URL Parameters for Category, Search, and Sorting
   const [searchParams, setSearchParams] = useSearchParams();
   const currentCategory = searchParams.get("category") || "all";
+  const currentSearch = searchParams.get("search") || "";
   const currentSort = searchParams.get("sort") || "newest";
 
-  // 3. Fetch Data from Backend
+  // 3. Fetch Data from Backend (Dynamic based on category and search query)
   useEffect(() => {
     const fetchProducts = async () => {
+      setIsLoading(true);
+      setError(null);
       try {
-        const response = await api("/api/products");
+        const queryParams = new URLSearchParams();
+        if (currentCategory && currentCategory !== "all") queryParams.set("category", currentCategory);
+        if (currentSearch && currentSearch.trim()) queryParams.set("search", currentSearch.trim());
+        if (currentSort) queryParams.set("sort", currentSort);
+
+        const response = await api(`/api/products?${queryParams.toString()}`);
         if (!response.ok) throw new Error("Server responded with an error");
         
         const data = await response.json();
@@ -39,31 +47,39 @@ export default function Shop() {
       }
     };
     fetchProducts();
-  }, []);
+  }, [currentCategory, currentSearch, currentSort]);
 
-  // 4. The Filter & Sort Engine
-  let displayProducts = currentCategory === "all"
-    ? [...products]
-    : products.filter(p => p.category === currentCategory);
-
-  // Apply Sorting Logic
-  if (currentSort === "price-low") {
-    displayProducts.sort((a, b) => a.price - b.price);
-  } else if (currentSort === "price-high") {
-    displayProducts.sort((a, b) => b.price - a.price);
-  } else if (currentSort === "newest") {
-    // Assuming you have a createdAt field, otherwise this won't change the array
-    displayProducts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  // Client-side fallback filter & sort
+  let displayProducts = [...products];
+  if (currentCategory !== "all") {
+    displayProducts = displayProducts.filter(p => p.category?.toLowerCase() === currentCategory.toLowerCase());
+  }
+  if (currentSearch.trim()) {
+    const q = currentSearch.toLowerCase();
+    displayProducts = displayProducts.filter(p =>
+      p.name?.toLowerCase().includes(q) ||
+      p.description?.toLowerCase().includes(q) ||
+      p.category?.toLowerCase().includes(q)
+    );
   }
 
   // 5. Handlers for URL updating
   const handleCategoryChange = (categoryValue: string) => {
-    // Update the URL without losing the current sort parameter!
-    setSearchParams({ category: categoryValue, sort: currentSort });
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.set("category", categoryValue);
+    setSearchParams(nextParams);
   };
 
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSearchParams({ category: currentCategory, sort: e.target.value });
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.set("sort", e.target.value);
+    setSearchParams(nextParams);
+  };
+
+  const handleClearSearch = () => {
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.delete("search");
+    setSearchParams(nextParams);
   };
 
   return (
@@ -138,8 +154,14 @@ export default function Shop() {
         {/* MAIN SHOP GRID */}
         <div className="shop-main" style={{ flexGrow: 1 }}>
           <div className="shop-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', paddingBottom: '16px', borderBottom: '1px solid var(--border)' }}>
-            <div className="shop-count" style={{ fontWeight: 600 }}>
-              <span style={{ fontSize: '20px' }}>{displayProducts.length}</span> items found
+            <div className="shop-count" style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div><span style={{ fontSize: '20px' }}>{displayProducts.length}</span> items found</div>
+              {currentSearch && (
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 12px', backgroundColor: 'var(--cream)', borderRadius: '16px', fontSize: '13px', fontWeight: 500, color: 'var(--brown)' }}>
+                  <span>Search: <strong>"{currentSearch}"</strong></span>
+                  <button onClick={handleClearSearch} title="Clear search" style={{ border: 'none', background: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '14px', color: 'var(--red)', padding: 0 }}>✕</button>
+                </div>
+              )}
             </div>
             
             {/* The Working Sort Dropdown */}

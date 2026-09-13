@@ -104,7 +104,6 @@ export default function ProductCard({ product }: ProductProps) {
               onClick={(e) => {
                 e.preventDefault();
                 addToCart(product);
-                toast.success(`${product.name} added to cart!`);
               }}
               style={{
                 padding: '6px 12px', backgroundColor: 'var(--brown)', 

@@ -1,9 +1,11 @@
 import { Link } from "react-router";
 import { useWishlist } from "../context/WishlistContext";
+import { useCart } from "../context/CartContext";
 import { Star, Heart, ShoppingBag } from "lucide-react";
 
 export default function Wishlist() {
   const { wishlistItems, toggleWishlist } = useWishlist();
+  const { addToCart } = useCart();
 
   // Calculate dynamic stats
   const totalItems = wishlistItems.length;
@@ -80,7 +82,9 @@ export default function Wishlist() {
               </button>
               
               <div className="wl-hover-actions">
-                <button className="wl-btn-add"><ShoppingBag size={16}/> ADD TO CART</button>
+                <button className="wl-btn-add" onClick={() => addToCart(item)}>
+                  <ShoppingBag size={16}/> ADD TO CART
+                </button>
               </div>
             </div>
             

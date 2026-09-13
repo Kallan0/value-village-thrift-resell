@@ -20,7 +20,7 @@ export default function Register() {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const { requestOtp, verifyOtp } = useAuth();
+  const { requestOtp, verifyOtp, loginWithGoogle, loginWithApple } = useAuth();
   const from = location.state?.from || "/";
 
   const triggerConfetti = () => {
@@ -108,6 +108,22 @@ export default function Register() {
     }
   };
 
+  const handleGoogleLogin = async () => {
+    const success = await loginWithGoogle();
+    if (success) {
+      triggerConfetti();
+      navigate(from, { replace: true });
+    }
+  };
+
+  const handleAppleLogin = async () => {
+    const success = await loginWithApple();
+    if (success) {
+      triggerConfetti();
+      navigate(from, { replace: true });
+    }
+  };
+
   return (
     <div className="page-content auth-wrap">
       <div className="auth-toggle">
@@ -119,9 +135,8 @@ export default function Register() {
       <div className="auth-sub">Create your free account in 30 seconds</div>
 
       <div className="social-row">
-        <button type="button" className="btn-social">🍎 Apple</button>
-        <button type="button" className="btn-social">🔵 Google</button>
-        <button type="button" className="btn-social">📘 Facebook</button>
+        <button type="button" className="btn-social" onClick={handleAppleLogin}>🍎 Apple</button>
+        <button type="button" className="btn-social" onClick={handleGoogleLogin}>🔵 Google</button>
       </div>
 
       <div className="auth-divider"><span>Or sign up with email</span></div>

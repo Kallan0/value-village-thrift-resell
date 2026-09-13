@@ -41,6 +41,14 @@ type Pages = {
   "/wishlist": {
     params: {};
   };
+  "/orders": {
+    params: {};
+  };
+  "/order-success/:id": {
+    params: {
+      "id": string;
+    };
+  };
   "/product/:id": {
     params: {
       "id": string;
@@ -51,7 +59,7 @@ type Pages = {
 type RouteFiles = {
   "root.tsx": {
     id: "root";
-    page: "/" | "/admin" | "/login" | "/register" | "/shop" | "/sell" | "/about" | "/cart" | "/checkout" | "/wishlist" | "/product/:id";
+    page: "/" | "/admin" | "/login" | "/register" | "/shop" | "/sell" | "/about" | "/cart" | "/checkout" | "/wishlist" | "/orders" | "/order-success/:id" | "/product/:id";
   };
   "routes/home.tsx": {
     id: "routes/home";
@@ -93,6 +101,14 @@ type RouteFiles = {
     id: "routes/wishlist";
     page: "/wishlist";
   };
+  "routes/orders.tsx": {
+    id: "routes/orders";
+    page: "/orders";
+  };
+  "routes/order-success.$id.tsx": {
+    id: "routes/order-success.$id";
+    page: "/order-success/:id";
+  };
   "routes/product.$id.tsx": {
     id: "routes/product.$id";
     page: "/product/:id";
@@ -111,5 +127,7 @@ type RouteModules = {
   "routes/cart": typeof import("./app/routes/cart.tsx");
   "routes/checkout": typeof import("./app/routes/checkout.tsx");
   "routes/wishlist": typeof import("./app/routes/wishlist.tsx");
+  "routes/orders": typeof import("./app/routes/orders.tsx");
+  "routes/order-success.$id": typeof import("./app/routes/order-success.$id.tsx");
   "routes/product.$id": typeof import("./app/routes/product.$id.tsx");
 };
