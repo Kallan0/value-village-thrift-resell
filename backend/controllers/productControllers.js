@@ -1,13 +1,45 @@
 const Product = require('../models/Product');
 
 // GET /api/products
-// Fetch all products from the database
+// Fetch products with search, category, condition, and sorting support
 const getProducts = async (req, res) => {
   try {
-    const products = await Product.find({ status: 'approved' }).sort({ createdAt: -1 });
+    const { search, category, condition, sort } = req.query;
+
+    const filter = { status: 'approved' };
+
+    // Category filter (case-insensitive)
+    if (category && category.toLowerCase() !== 'all') {
+      filter.category = new RegExp(`^${category.trim()}$`, 'i');
+    }
+
+    // Condition filter
+    if (condition) {
+      filter.condition = condition;
+    }
+
+    // Keyword Search across title and description
+    if (search && search.trim()) {
+      const searchRegex = new RegExp(search.trim(), 'i');
+      filter.$or = [
+        { name: searchRegex },
+        { description: searchRegex },
+        { category: searchRegex }
+      ];
+    }
+
+    // Sort order
+    let sortOption = { createdAt: -1 }; // default newest
+    if (sort === 'price-low') {
+      sortOption = { price: 1 };
+    } else if (sort === 'price-high') {
+      sortOption = { price: -1 };
+    }
+
+    const products = await Product.find(filter).sort(sortOption);
     res.status(200).json(products);
   } catch (error) {
-    console.error(error);
+    console.error('Error fetching products:', error);
     res.status(500).json({ message: 'Server Error fetching products' });
   }
 };
