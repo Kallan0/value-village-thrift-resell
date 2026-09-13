@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router";
 import ProductCard from "../components/UI/ProductCard";
+import { api } from "../lib/api";
 
 // 1. The Category Assets
 const CATEGORY_BANNERS = [
@@ -25,7 +26,7 @@ export default function Shop() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/products");
+        const response = await api("/api/products");
         if (!response.ok) throw new Error("Server responded with an error");
         
         const data = await response.json();

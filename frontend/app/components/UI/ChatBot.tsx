@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { useAuth } from "../../context/AuthContext"; // Adjust path to your auth context
+import { useAuth } from "../../context/AuthContext";
+import { api } from "../../lib/api";
 
 
 interface Message {
@@ -22,7 +23,7 @@ export default function Chatbot() {
 useEffect(() => {
     const fetchFAQ = async () => {
         try {
-            const response = await fetch("http://localhost:5000/api/chat/faqs");
+            const response = await api("/api/chat/faqs");
             if (response.ok) {
                 const data = await response.json();
                 setDynamicFAQ(data);
@@ -44,7 +45,7 @@ useEffect(() => {
 
     // 2. Send the data to your backend to be logged
     try {
-      const response = await fetch("http://localhost:5000/api/chat/log", {
+      const response = await api("/api/chat/log", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -78,7 +79,7 @@ useEffect(() => {
     setMessages(prev => prev.map(msg => msg.id === localMsgId ? { ...msg, feedbackGiven: true } : msg));
 
     try {
-      await fetch(`http://localhost:5000/api/chat/feedback/${dbLogId}`, {
+      await api(`/api/chat/feedback/${dbLogId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ feedback })

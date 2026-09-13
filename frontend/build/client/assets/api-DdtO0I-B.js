@@ -1,0 +1,1 @@
+async function e(e,t={}){return fetch(`http://localhost:5000${e}`,t)}export{e as t};

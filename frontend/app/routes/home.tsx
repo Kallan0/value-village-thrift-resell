@@ -1,7 +1,7 @@
 import { Link } from "react-router";
-import Text3DFlip from "~/components/UI/3DFliptext";
 import ProductCard from "../components/UI/ProductCard";
-import ReviewMarquee from "~/components/UI/ReviewMarquee";
+import ReviewMarquee from "../components/UI/ReviewMarquee";
+import Text3DFlip from "../components/UI/3DFliptext";
 
 export default function Home() {
   const marqueeWords = [
@@ -119,13 +119,13 @@ export default function Home() {
         </div>
 
         <div className="cat-grid">
-          <Link to="/shop?category=womens" className="cat-card bg-brown">
+          <Link to="/shop?category=Women's" className="cat-card bg-brown">
             <div className="cat-card-icon">👗</div>
             <div className="cat-card-title">WOMEN'S</div>
             <div className="cat-card-count">18,200 items</div>
           </Link>
           
-          <Link to="/shop?category=mens" className="cat-card bg-green">
+          <Link to="/shop?category=Men's" className="cat-card bg-green">
             <div className="cat-card-icon">👔</div>
             <div className="cat-card-title">MEN'S</div>
             <div className="cat-card-count">12,400 items</div>
@@ -137,7 +137,7 @@ export default function Home() {
             <div className="cat-card-count">7,600 items</div>
           </Link>
           
-          <Link to="/shop?category=accessories" className="cat-card bg-tan">
+          <Link to="/shop?category=Accessories" className="cat-card bg-tan">
             <div className="cat-card-icon">👜</div>
             <div className="cat-card-title">ACCESSORIES</div>
             <div className="cat-card-count">5,800 items</div>

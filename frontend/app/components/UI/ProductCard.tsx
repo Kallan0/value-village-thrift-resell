@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { useCart } from "~/context/CartContext";
-import { useWishlist } from "~/context/WishlistContext";
+import { useCart } from "../../context/CartContext";
+import { useWishlist } from "../../context/WishlistContext";
 import toast from "react-hot-toast";
 
 import HeartCursor from "./HoverAni/pointer";

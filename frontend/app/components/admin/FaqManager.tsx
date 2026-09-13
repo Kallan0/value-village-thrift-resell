@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { api } from "../../lib/api";
 
 interface Faq {
   _id: string;
@@ -19,7 +20,7 @@ export default function FaqManager() {
   // 1. Fetch FAQs on Load
   const fetchFaqs = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/chat/faqs");
+      const response = await api("/api/chat/faqs");
       const data = await response.json();
       setFaqs(data);
     } catch (error) {
@@ -37,13 +38,13 @@ export default function FaqManager() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const url = editingId 
-      ? `http://localhost:5000/api/chat/faqs/${editingId}`
-      : `http://localhost:5000/api/chat/faqs`;
+      ? `/api/chat/faqs/${editingId}`
+      : `/api/chat/faqs`;
     
     const method = editingId ? "PUT" : "POST";
 
     try {
-      const response = await fetch(url, {
+      const response = await api(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData)
@@ -63,7 +64,7 @@ export default function FaqManager() {
   const handleDelete = async (id: string) => {
     if (!window.confirm("Are you sure you want to delete this FAQ?")) return;
     try {
-      await fetch(`http://localhost:5000/api/chat/faqs/${id}`, { method: "DELETE" });
+      await api(`/api/chat/faqs/${id}`, { method: "DELETE" });
       setFaqs(faqs.filter(faq => faq._id !== id));
     } catch (error) {
       console.error("Failed to delete FAQ");

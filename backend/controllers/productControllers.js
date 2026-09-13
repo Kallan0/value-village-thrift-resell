@@ -4,7 +4,7 @@ const Product = require('../models/Product');
 // Fetch all products from the database
 const getProducts = async (req, res) => {
   try {
-    const products = await Product.find({});
+    const products = await Product.find({ status: 'approved' }).sort({ createdAt: -1 });
     res.status(200).json(products);
   } catch (error) {
     console.error(error);

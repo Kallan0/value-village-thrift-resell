@@ -1,4 +1,6 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
+import toast from 'react-hot-toast';
+import { api } from '../lib/api';
 
 // 1. Define the exact shape of your User so the Sidebar doesn't crash
 export interface UserProfile {
@@ -8,6 +10,7 @@ export interface UserProfile {
   phone?: string;
   imageUrl?: string;
   isPremium?: boolean;
+  role?: string;
 }
 
 interface AuthContextType {
@@ -28,7 +31,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
+      const response = await api('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -36,19 +39,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const data = await response.json();
       if (response.ok) {
         setIsAuthenticated(true);
-        // Map backend DB user to frontend profile shape (adding fallbacks if DB is missing fields)
         setUser({
           id: data.user._id,
-          name: `${data.user.firstName} ${data.user.lastName}`.trim() || data.user.name,
+          name: `${data.user.firstName} ${data.user.lastName}`.trim(),
           email: data.user.email,
           phone: data.user.phone || "+91 XXXXX XXXXX", // Fallback until they edit it
           imageUrl: data.user.imageUrl || "https://avatar.vercel.sh/" + data.user.email,
-          isPremium: data.user.isPremium || false
+          isPremium: data.user.isPremium || false,
+          role: data.user.role,
         });
         return true;
       }
 
-      alert(data.message);
+      toast.error(data.message || 'Login failed');
       return false;
     } catch (error) {
       console.error('Failed to connect to backend:', error);
@@ -58,7 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const requestOtp = async (firstName: string, lastName: string, email: string, password: string) => {
     try {
-      const response = await fetch('http://localhost:5000/api/auth/request-otp', {
+      const response = await api('/api/auth/request-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ firstName, lastName, email, password })
@@ -78,7 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const verifyOtp = async (email: string, otp: string) => {
     try {
-      const response = await fetch('http://localhost:5000/api/auth/verify-otp', {
+      const response = await api('/api/auth/verify-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, otp })
@@ -89,11 +92,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setIsAuthenticated(true);
         setUser({
           id: data.user._id,
-          name: `${data.user.firstName} ${data.user.lastName}`.trim() || data.user.name,
+          name: `${data.user.firstName} ${data.user.lastName}`.trim(),
           email: data.user.email,
           phone: data.user.phone || "+91 XXXXX XXXXX",
           imageUrl: data.user.imageUrl || "https://avatar.vercel.sh/" + data.user.email,
-          isPremium: data.user.isPremium || false
+          isPremium: data.user.isPremium || false,
+          role: data.user.role,
         });
         return { success: true, message: data.message };
       }

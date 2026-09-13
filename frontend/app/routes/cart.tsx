@@ -1,10 +1,10 @@
-import { Link } from "react-router";
-// Assuming you have a context similar to WishlistContext. Adjust the import path if needed!
+import { Link, useNavigate } from "react-router";
 import { useCart } from "../context/CartContext"; 
 import { ShoppingCart, Trash2} from "lucide-react";
 
 export default function Cart() {
   const { cartItems, removeFromCart, updateQuantity } = useCart();
+  const navigate = useNavigate();
 
   // 1. Calculate dynamic totals based on real data
   const subtotal = cartItems.reduce((sum, item) => sum + (Number(item.price) * (item.quantity || 1)), 0);
@@ -71,7 +71,7 @@ export default function Cart() {
                   
                   {/* Remove Button */}
                   <button onClick={() => removeFromCart(item._id)} style={{ background: 'none', border: 'none', color: 'var(--red)', cursor: 'pointer', fontSize: '20px' }}>
-                    <Trash2 size="{20}"/>
+                    <Trash2 size={20}/>
                   </button>
                 </div>
 
@@ -109,7 +109,9 @@ export default function Cart() {
             <span>{formatPrice(total)}</span>
           </div>
 
-          <button style={{ width: '100%', padding: '16px', backgroundColor: 'var(--brown)', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '16px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s ease' }}>
+          <button 
+            onClick={() => navigate('/checkout')}
+            style={{ width: '100%', padding: '16px', backgroundColor: 'var(--brown)', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '16px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s ease' }}>
             PROCEED TO CHECKOUT
           </button>
         </div>

@@ -53,13 +53,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const addToCart = (product: Omit<CartItem, 'quantity'>) => {
     setCartItems(prev => {
       const existingItem = prev.find(item => item._id === product._id);
-      
+
       if (existingItem) {
-        // If it's already in the cart, just add 1 to the quantity
-       toast.success(`${product.name} item already in cart!`);
+        toast.success(`${product.name} quantity increased`);
+        return prev.map(item =>
+          item._id === product._id ? { ...item, quantity: (item.quantity || 1) + 1 } : item
+        );
       }
-      
-      // If it's new, add it with a starting quantity of 1
+
+      toast.success(`${product.name} added to cart`);
       return [...prev, { ...product, quantity: 1 }];
     });
   };

@@ -1,4 +1,3 @@
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 require('dotenv').config();
 
 const express = require('express');
@@ -12,14 +11,19 @@ const User = require('./models/User'); // Import the blueprint you just made
 
 const Product = require('./models/Product');
 const upload = require('./middleware/upload');
-const Chatlog = require('./models/Chatlog');
+const ChatLog = require('./models/ChatLog');
 
 const sendEmail = require('./utils/sendEmail'); // Import the email utility
 
 const pendingRegistrations = new Map();
 
 // Middleware
-app.use(cors());
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  process.env.CLIENT_URL,
+].filter(Boolean);
+app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
 
 // Database Connection
@@ -41,9 +45,6 @@ app.post('/api/auth/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // 1. THE TRUTH SERUM
-    console.log("👉 FRONTEND SENT - Email:", `"${email}"`, "Password:", `"${password}"`);
-
     // Prevent crashes if email/password are somehow undefined
     if (!email || !password) {
       return res.status(400).json({ message: "Please provide both email and password." });
@@ -56,10 +57,7 @@ app.post('/api/auth/login', async (req, res) => {
     // 3. Search MongoDB (using Regex to make it case-insensitive!)
     const user = await User.findOne({ email: new RegExp('^' + cleanEmail + '$', 'i') });
 
-    // 4. THE TRUTH SERUM: What did MongoDB find?
-    if (user) {
-      console.log("✅ DB FOUND USER - Email:", `"${user.email}"`, "Password:", `"${user.password}"`);
-    } else {
+    if (!user) {
       console.log("❌ DB FOUND NOBODY matching that email.");
     }
 
@@ -71,7 +69,7 @@ app.post('/api/auth/login', async (req, res) => {
     // Success! Send the user data back to the frontend
     res.status(200).json({ 
       message: "Login successful!", 
-      user: { id: user._id, name: user.firstName, role: user.role } 
+      user: { _id: user._id, firstName: user.firstName, lastName: user.lastName, email: user.email, role: user.role } 
     });
 
   } catch (error) {
@@ -145,7 +143,7 @@ app.post('/api/auth/verify-otp', async (req, res) => {
 
     res.status(201).json({
       message: 'Account created successfully!',
-      user: { id: newUser._id, name: newUser.firstName, role: newUser.role }
+      user: { _id: newUser._id, firstName: newUser.firstName, lastName: newUser.lastName, email: newUser.email, role: newUser.role }
     });
   } catch (error) {
     console.error('Verify OTP Error:', error);
@@ -226,18 +224,7 @@ app.post('/api/products', (req, res) => {
   });
 });
 
-// --- GET ALL PRODUCTS ROUTE ---
-app.get('/api/products', async (req, res) => {
-  try {
-    // .find() grabs everything. .sort({ createdAt: -1 }) puts the newest items first!
-    const products = await Product.find({status: 'approved'}).sort({ createdAt: -1 });
-    
-    res.status(200).json(products);
-  } catch (error) {
-    console.error("Fetch Products Error:", error);
-    res.status(500).json({ message: "Failed to fetch products." });
-  }
-});
+// --- DEAD CODE REMOVED: inline GET /api/products duplicated the mounted router ---
 
 // --- ADMIN: GET ALL PRODUCTS (FOR DASHBOARD) ---
 app.get('/api/admin/products', async (req, res) => {
@@ -273,16 +260,36 @@ app.post('/api/chat/log', async (req, res) => {
   }
 });
 
-app.patch('/api/chatbot/:id/feedback', async (req, res) => {
+app.patch('/api/chat/feedback/:id', async (req, res) => {
   try{
     const {feedback} = req.body;
 
-    await Chatlog.findByIdAndUpdate(req.params.id, {feedback});
+    await ChatLog.findByIdAndUpdate(req.params.id, {feedback});
 
-    res.status(500).json({message: "Feedback updated successfully."});
+    res.status(200).json({message: "Feedback updated successfully."});
   } catch(error) {
     console.error("Feedback error", error);
     res.status(500).json({message: "Failed to update feedback."});
+  }
+});
+
+// --- ADMIN: APPROVE / REJECT A PRODUCT ---
+app.patch('/api/admin/products/:id', async (req, res) => {
+  try {
+    const { status, rejectionReason } = req.body;
+    if (!['approved', 'rejected', 'pending'].includes(status)) {
+      return res.status(400).json({ message: 'Invalid status.' });
+    }
+    const updated = await Product.findByIdAndUpdate(
+      req.params.id,
+      { status, rejectionReason: status === 'rejected' ? (rejectionReason || '') : '' },
+      { new: true }
+    );
+    if (!updated) return res.status(404).json({ message: 'Product not found.' });
+    res.status(200).json(updated);
+  } catch (error) {
+    console.error("Admin product update error:", error);
+    res.status(500).json({ message: "Failed to update product status." });
   }
 });
 
@@ -332,40 +339,5 @@ app.delete('/api/chat/faqs/:id', async (req, res) => {
     res.status(200).json({ message: "FAQ deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: "Failed to delete FAQ" });
-  }
-});
-
-// --- OTP GENERATION ROUTE ---
-app.post('/api/auth/request-otp', async (req, res) => {
-  try {
-    const { email } = req.body;
-
-    if (!email) {
-      return res.status(400).json({ message: "Email is required" });
-    }
-
-    // 1. Generate the 6-digit OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-
-    // 2. Prepare the email content
-    const message = `Your verification code is: ${otp}. It is valid for 5 minutes.`;
-
-    // 3. Send the email using your utility
-    await sendEmail({
-      email: email, 
-      subject: 'Your OTP Verification Code',
-      message: message,
-      html: `<h2>Welcome!</h2><p>Your verification code is: <strong>${otp}</strong></p>`
-    });
-
-    // ⚠️ IMPORTANT: We will eventually need to save the OTP to MongoDB right here 
-    // before sending the success response, so we can verify it later!
-
-    // 4. Tell the frontend it worked so it switches to Step 2
-    res.status(200).json({ message: "OTP sent successfully!" });
-    
-  } catch (error) {
-    console.error("OTP Route Error:", error);
-    res.status(500).json({ message: "Failed to send OTP" });
   }
 });

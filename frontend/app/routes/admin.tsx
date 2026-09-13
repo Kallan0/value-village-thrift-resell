@@ -1,20 +1,21 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate, useOutletContext } from "react-router";
-import FaqManager from "~/components/admin/FaqManager";
+import { useNavigate } from "react-router";
+import FaqManager from "../components/admin/FaqManager";
+import { api } from "../lib/api";
 
 
 export default function AdminDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const {theme, setTheme} = useOutletContext<any>();  
+  // Route guard: only logged-in users may view the admin panel.
+  // (Backend endpoints are still open — add token auth on the server for real security.)
+  useEffect(() => {
+    if (!user) navigate('/login');
+  }, [user, navigate]);
 
-  const toggleTheme = () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(newTheme);
-    localStorage.setItem('app-theme', newTheme);
-  };
+  if (!user) return null;
 
   const [allProducts, setAllProducts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -22,21 +23,12 @@ export default function AdminDashboard() {
   const [productTab, setProductTab] = useState("products"); // Default to 'products' tab
 
   useEffect(() => {
-    // if (!user) {
-    //   navigate('/login');
-    //   return;
-    // }
-
     const fetchDashboardData = async () => {
       try {
-        console.log("1. Frontend asking for data...");
-        const response = await fetch("http://localhost:5000/api/admin/products");
-        
-        console.log("2. Response Status:", response.status);
+        const response = await api("/api/admin/products");
         
         if (response.ok) {
           const data = await response.json();
-          console.log("3. Data successfully received:", data);
           setAllProducts(data);
         } else {
           console.log("❌ Backend threw an error status!");
@@ -60,7 +52,7 @@ export default function AdminDashboard() {
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/api/admin/products/${productId}`, {
+      const response = await api(`/api/admin/products/${productId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status, rejectionReason })
@@ -85,7 +77,7 @@ export default function AdminDashboard() {
   const rejectedItems = allProducts.filter(p => p.status === 'rejected');
   const soldItems = allProducts.filter(p => p.status === 'sold'); 
 
-  let currentDisplayList = [];
+  let currentDisplayList: any[] = [];
   if (activeTab === 'all') currentDisplayList = allProducts;
   if (activeTab === 'pending') currentDisplayList = pendingItems;
   if (activeTab === 'approved') currentDisplayList = approvedItems;
@@ -111,7 +103,12 @@ export default function AdminDashboard() {
           <SidebarButton label="Sold Items" count={soldItems.length} active={activeTab === 'sold'} onClick={() => setActiveTab('sold')} />
           <hr style={{ margin: '16px 0', border: 'none', borderTop: '1px solid var(--border)' }} />
           <SidebarButton label="Analytics & Stats" count={null} active={activeTab === 'analytics'} onClick={() => setActiveTab('analytics')} />
-          <button onClick={() => setProductTab('faqs')}>🤖 Chatbot FAQs</button>
+          <button 
+            onClick={() => setActiveTab('faqs')}
+            style={{ padding: '12px 16px', width: '100%', border: 'none', borderRadius: '8px', backgroundColor: 'transparent', color: 'var(--brown-muted)', fontWeight: 500, cursor: 'pointer', textAlign: 'left' }}
+          >
+            🤖 Chatbot FAQs
+          </button>
           <div style={{ marginTop: 'auto', paddingTop: '24px', borderTop: '1px solid var(--border-color)' }}>
           <button 
             onClick={toggleTheme}

@@ -14,7 +14,7 @@ export default function Wishlist() {
     return (
       <div className="page-content" style={{ backgroundColor: 'var(--cream)', minHeight: 'calc(100vh - 68px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 20px' }}>
         <div style={{ fontSize: '80px', marginBottom: '24px', opacity: 0.5 }}>
-          <Heart size="{80}" strokeWidth="{1}"/>
+          <Heart size={80} strokeWidth={1}/>
           </div>
         <h1 className="wl-h1" style={{ color: 'var(--brown)', fontSize: '48px', textAlign: 'center' }}>
           YOUR WISHLIST IS <span style={{ color: 'var(--red)' }}>EMPTY</span>
@@ -80,12 +80,12 @@ export default function Wishlist() {
               </button>
               
               <div className="wl-hover-actions">
-                <button className="wl-btn-add"><ShoppingBag size="{16}"/> ADD TO CART</button>
+                <button className="wl-btn-add"><ShoppingBag size={16}/> ADD TO CART</button>
               </div>
             </div>
             
             <div className="wl-info">
-              <div className="wl-seller"><span><Star fill="currentColor" size="{14}"/></span> @value.village</div>
+              <div className="wl-seller"><span><Star fill="currentColor" size={14}/></span> @value.village</div>
               <div className="wl-title">{item.name}</div>
               
               {/* ✅ THE FIX: Replaced item.meta.split() with item.category and item.condition */}

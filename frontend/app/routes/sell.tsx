@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../context/AuthContext";
+import { api } from "../lib/api";
 
 export default function Sell() {
   const { user } = useAuth();
@@ -60,8 +61,10 @@ export default function Sell() {
       formData.append("images", image); 
     });
 
+    formData.append("sellerId", user.id);
+
     try {
-      const response = await fetch("http://localhost:5000/api/products", {
+      const response = await api("/api/products", {
         method: "POST",
         body: formData,
       });
